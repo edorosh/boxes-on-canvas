@@ -54,7 +54,7 @@ export default class Shape {
     return Shape.collides(this, otherShape)
   }
 
-  bordersWith(otherShape) {
+  bordersWith (otherShape) {
     return Shape.borders(this, otherShape)
   }
 
