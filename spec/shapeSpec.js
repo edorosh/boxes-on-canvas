@@ -80,6 +80,53 @@ describe('Class Shape', () => {
     })
   })
 
+  describe('Should detect border with', () => {
+    using({
+      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight(), shapeW, shapeH),
+      'move down': new Shape(shape.getX(), shape.getOffsetY(), shapeW, shapeH),
+      'move left': new Shape(shape.getX() - shape.getWidth(), shape.getY(), shapeW, shapeH),
+      'move right': new Shape(shape.getX() + shape.getWidth(), shape.getY(), shapeW, shapeH),
+      'transform and move up': new Shape(shape.getX(), shape.getY() - shape.getWidth(), shapeH, shapeW),
+      'edge case': new Shape(
+        shape.getX() + shape.getWidth(),
+        shape.getY() - shape.getHeight(),
+        shapeW,
+        shapeH
+      )
+    }, (borderWithShape, description) => {
+      it(`${borderWithShape} to the ${shape} (${description})`, () => {
+        expect(borderWithShape.bordersWith(shape, snapToOffset)).toBeTruthy()
+      })
+    })
+  })
+
+  describe('Should NOT detect border with', () => {
+    using({
+      'itself': new Shape(shape.getX(), shape.getY(), shapeW, shapeH),
+      'shift right': new Shape(shape.getX() + halfWidth, shape.getY(), shapeW, shapeH),
+      'shift left': new Shape(shape.getX() - halfWidth, shape.getY(), shapeW, shapeH),
+      'transform': new Shape(shape.getX(), shape.getY(), shapeH, shapeW),
+      'transform and shift right': new Shape(shape.getX() + halfWidth, shape.getY(), shapeH, shapeW),
+      'transform and shift up': new Shape(shape.getX(), shape.getY() - halfWidth, shapeH, shapeW),
+      'transform and shift up right': new Shape(shape.getX() + halfWidth, shape.getY() - halfWidth, shapeH, shapeW),
+      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH),
+      'move down': new Shape(shape.getX(), shape.getOffsetY() + snapToOffset, shapeW, shapeH),
+      'move left': new Shape(shape.getX() - shape.getWidth() - snapToOffset, shape.getY(), shapeW, shapeH),
+      'move right': new Shape(shape.getX() + shape.getWidth() + snapToOffset, shape.getY(), shapeW, shapeH),
+      'transform and move up': new Shape(shape.getX(), shape.getY() - shape.getWidth() - snapToOffset, shapeH, shapeW),
+      'edge case': new Shape(
+        shape.getX() + shape.getWidth() + snapToOffset,
+        shape.getY() - shape.getHeight() - snapToOffset,
+        shapeW,
+        shapeH
+      )
+    }, (noBorderWithShape, description) => {
+      it(`${noBorderWithShape} to the ${shape} (${description})`, () => {
+        expect(noBorderWithShape.bordersWith(shape, snapToOffset)).toBeFalsy()
+      })
+    })
+  })
+
   describe('Should allow snapping', () => {
     using({
       'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH),

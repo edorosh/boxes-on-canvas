@@ -54,6 +54,10 @@ export default class Shape {
     return Shape.collides(this, otherShape)
   }
 
+  bordersWith(otherShape) {
+    return Shape.borders(this, otherShape)
+  }
+
   /**
    * Detects if Other Shape sticks to the current
    *
@@ -96,6 +100,22 @@ export default class Shape {
 
     return (boostedShape.getX() <= a.getOffsetX() && boostedShape.getOffsetX() >= a.getX()) &&
       (boostedShape.getY() <= a.getOffsetY() && boostedShape.getOffsetY() >= a.getY())
+  }
+
+  /**
+   *
+   * @param {Shape} a
+   * @param {Shape} b
+   *
+   * @returns {boolean}
+   */
+  static borders (a, b) {
+    return (a.getX() <= b.getOffsetX() && a.getOffsetX() >= b.getX()) &&
+      (a.getY() <= b.getOffsetY() && a.getOffsetY() >= b.getY()) &&
+      !(
+        (a.getOffsetX() > b.getX() && a.getX() < b.getOffsetX()) &&
+        (a.getOffsetY() > b.getY() && a.getY() < b.getOffsetY())
+      )
   }
 
   toString () {
