@@ -95,6 +95,22 @@ export default class Shape {
   }
 
   /**
+   *
+   * @param {Shape} a
+   * @param {Shape} b
+   *
+   * @returns {boolean}
+   */
+  static borders (a, b) {
+    return (a.getX() <= b.getOffsetX() && a.getOffsetX() >= b.getX()) &&
+      (a.getY() <= b.getOffsetY() && a.getOffsetY() >= b.getY()) &&
+      !(
+        (a.getX() < b.getOffsetX() && a.getOffsetX() > b.getX()) &&
+        (a.getY() < b.getOffsetY() && a.getOffsetY() > b.getY())
+      )
+  }
+
+  /**
    * Detects if two Shape can be glued together
    *
    * @param {Shape} a
@@ -112,22 +128,6 @@ export default class Shape {
     )
 
     return Shape.collideOrBorder(a, boostedShape)
-  }
-
-  /**
-   *
-   * @param {Shape} a
-   * @param {Shape} b
-   *
-   * @returns {boolean}
-   */
-  static borders (a, b) {
-    return (a.getX() <= b.getOffsetX() && a.getOffsetX() >= b.getX()) &&
-      (a.getY() <= b.getOffsetY() && a.getOffsetY() >= b.getY()) &&
-      !(
-        (a.getOffsetX() > b.getX() && a.getX() < b.getOffsetX()) &&
-        (a.getOffsetY() > b.getY() && a.getY() < b.getOffsetY())
-      )
   }
 
   toString () {
