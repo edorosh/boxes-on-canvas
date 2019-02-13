@@ -82,6 +82,19 @@ export default class Shape {
   }
 
   /**
+   * Detects if two Shape have collisions or border with each other
+   *
+   * @param {Shape} a
+   * @param {Shape} b
+   *
+   * @returns {boolean}
+   */
+  static collideOrBorder (a, b) {
+    return (a.getX() <= b.getOffsetX() && a.getOffsetX() >= b.getX()) &&
+      (a.getY() <= b.getOffsetY() && a.getOffsetY() >= b.getY())
+  }
+
+  /**
    * Detects if two Shape can be glued together
    *
    * @param {Shape} a
@@ -98,8 +111,7 @@ export default class Shape {
       b.getHeight() + stickyOffset * 2
     )
 
-    return (boostedShape.getX() <= a.getOffsetX() && boostedShape.getOffsetX() >= a.getX()) &&
-      (boostedShape.getY() <= a.getOffsetY() && boostedShape.getOffsetY() >= a.getY())
+    return Shape.collideOrBorder(a, boostedShape)
   }
 
   /**
