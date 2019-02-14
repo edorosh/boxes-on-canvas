@@ -7,9 +7,13 @@ export default class BoxApp {
 
   /**
    * @param {Shape} shape
+   *
+   * @return {this}
    */
   add (shape) {
     this.shapeList.add(shape)
+
+    return this
   }
 
   get size () {
