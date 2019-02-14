@@ -45,7 +45,7 @@ export default class Shape {
     return this.y + this.heigh
   }
 
-  display (ctx) {
+  draw (ctx) {
     ctx.fillStyle = this.fill
     ctx.fillRect(this.x, this.y, this.width, this.heigh)
   }

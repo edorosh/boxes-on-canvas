@@ -42,7 +42,7 @@ describe('Class Shape', () => {
     it('by Canvas', () => {
       let ctx = jasmine.createSpyObj('ctx', ['fillRect', 'fillStyle'])
 
-      shape.display(ctx)
+      shape.draw(ctx)
 
       expect(ctx.fillStyle).toBe(Shape.defaultFillColor)
       expect(ctx.fillRect).toHaveBeenCalledWith(shapeX, shapeY, shapeW, shapeH)
