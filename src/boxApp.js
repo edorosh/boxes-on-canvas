@@ -2,7 +2,7 @@ export default class BoxApp {
   constructor (canvasEl) {
     this.shapeList = new Set()
     this.canvasEl = canvasEl
-    this.ctx = null
+    this.ctx = canvasEl.getContext('2d')
   }
 
   /**

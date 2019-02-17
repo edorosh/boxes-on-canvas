@@ -1,5 +1,5 @@
-import Shape from './src/shape'
-import BoxApp from './src/boxApp'
+import Shape from './shape'
+import BoxApp from './boxApp'
 
 const canvasId = 'canvas'
 

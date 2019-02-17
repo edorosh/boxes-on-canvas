@@ -2,10 +2,14 @@ import BoxApp from '../src/boxApp'
 import Shape from '../src/shape'
 
 describe('Class Box App represents drawing component', () => {
-  let boxApp
+  let boxApp, canvasEl, ctxMock
 
   beforeEach(() => {
-    boxApp = new BoxApp()
+    canvasEl = jasmine.createSpyObj('canvasEl', ['getContext'])
+    ctxMock = jasmine.createSpyObj('ctx', ['fillRect', 'fillStyle'])
+    canvasEl.getContext.and.returnValue(ctxMock)
+
+    boxApp = new BoxApp(canvasEl)
   })
 
   it('Should add Shapes to the canvas', () => {
@@ -18,11 +22,9 @@ describe('Class Box App represents drawing component', () => {
 
   it('Should draw added Shapes on the canvas', () => {
     const shape = new Shape(5, 5, 4, 2)
-    const ctxMock = jasmine.createSpyObj('ctx', ['fillRect', 'fillStyle'])
 
     spyOn(shape, 'draw')
 
-    boxApp.ctx = ctxMock
     boxApp.add(shape)
     boxApp.draw()
 
