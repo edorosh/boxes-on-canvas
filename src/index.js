@@ -8,10 +8,13 @@ function initBoxApp () {
   const boxApp = new BoxApp(canvasEl)
 
   boxApp
-    .add(new Shape(5, 4, 30, 10))
-    .add(new Shape(5, 20, 20, 10))
-    .add(new Shape(5, 40, 40, 10))
-    .add(new Shape(5, 90, 30, 10))
+    .add(new Shape(10, 10, 80, 80))
+    .add(new Shape(69, 30, 80, 80))
+    .add(new Shape(190, 10, 80, 80))
+    .add(new Shape(280, 10, 80, 80))
+    .add(new Shape(370, 10, 80, 80))
+    .add(new Shape(460, 10, 80, 80))
+    .update()
     .draw()
 }
 

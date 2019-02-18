@@ -18,18 +18,22 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "html-webpack-plugin": "^3.2.0",
     "jasmine": "^3.3.1",
     "jasmine-console-reporter": "^3.1.0",
     "jasmine-data-provider": "^2.2.0",
     "webpack": "^4.29.3",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14"
   },
   "scripts": {
     "test": "jasmine --reporter=jasmine-console-reporter",
     "cs-src-fix": "eslint --fix src/",
     "cs-spec-fix": "eslint --fix spec/",
     "cs-all-fix": "eslint --fix src/ spec/",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server --open --hot --mode development --config webpack.config.js",
+    "watch": "webpack --watch"
   },
   "author": "Eugene Dorosh",
   "license": "ISC"
