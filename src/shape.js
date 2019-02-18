@@ -7,6 +7,10 @@ export default class Shape {
     return '#FF0000'
   }
 
+  static get strokeColor () {
+    return '#000000'
+  }
+
   /**
    * @param {int} x
    * @param {int} y
@@ -45,7 +49,30 @@ export default class Shape {
     return this.y + this.heigh
   }
 
+  /**
+   * @todo test this more
+   */
+  setInCollisionState () {
+    this.fill = Shape.collideFillColor
+  }
+
+  /**
+   * @todo test this more
+   */
+  resetCollisionState () {
+    this.fill = Shape.defaultFillColor
+  }
+
+  /**
+   * @todo test this more
+   *
+   * @param ctx
+   */
   draw (ctx) {
+    ctx.strokeStyle = Shape.strokeColor
+    ctx.lineWidth = 3
+    ctx.strokeRect(this.x, this.y, this.width, this.heigh)
+
     ctx.fillStyle = this.fill
     ctx.fillRect(this.x, this.y, this.width, this.heigh)
   }
