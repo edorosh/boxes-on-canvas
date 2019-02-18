@@ -21,8 +21,9 @@ export default class Shape {
     this.x = x
     this.y = y
     this.width = width
-    this.heigh = height
+    this.height = height
     this.fill = Shape.defaultFillColor
+    this.borderWidth = 3
   }
 
   getX () {
@@ -38,7 +39,7 @@ export default class Shape {
   }
 
   getHeight () {
-    return this.heigh
+    return this.height
   }
 
   getOffsetX () {
@@ -46,7 +47,7 @@ export default class Shape {
   }
 
   getOffsetY () {
-    return this.y + this.heigh
+    return this.y + this.height
   }
 
   /**
@@ -70,11 +71,11 @@ export default class Shape {
    */
   draw (ctx) {
     ctx.strokeStyle = Shape.strokeColor
-    ctx.lineWidth = 3
-    ctx.strokeRect(this.x, this.y, this.width, this.heigh)
+    ctx.lineWidth = this.borderWidth
+    ctx.strokeRect(this.x, this.y, this.width, this.height)
 
     ctx.fillStyle = this.fill
-    ctx.fillRect(this.x, this.y, this.width, this.heigh)
+    ctx.fillRect(this.x, this.y, this.width, this.height)
   }
 
   collidesWith (otherShape) {
@@ -93,6 +94,44 @@ export default class Shape {
    */
   isStickableTo (otherShape, stickyOffset) {
     return Shape.areStickable(this, otherShape, stickyOffset)
+  }
+
+  /**
+   * Snaps a shape to other Shape
+   *
+   * @param {Shape} snapToShape
+   *
+   * @throws Error In case of shape collisions
+   *
+   * @todo add more meaningful exception class
+   */
+  snapTo (snapToShape) {
+    if (this.collidesWith(snapToShape)) {
+
+      throw new Error('Snap to shape being in collision is not supported!')
+    }
+
+    const borderOffset = Math.floor(this.borderWidth / 2) + 1
+
+    // shift left
+    if (snapToShape.getOffsetX() < this.getX()) {
+      this.x = snapToShape.getOffsetX() + borderOffset
+    }
+
+    // shift right
+    if (this.getOffsetX() < snapToShape.getX()) {
+      this.x = snapToShape.getX() - this.getWidth() - borderOffset
+    }
+
+    // shift down
+    if (this.getOffsetY() < snapToShape.getY()) {
+      this.y = snapToShape.getY() - this.getHeight() - borderOffset
+    }
+
+    // shift up
+    if (snapToShape.getOffsetY() < this.getY()) {
+      this.y = snapToShape.getOffsetY() + borderOffset
+    }
   }
 
   /**
@@ -145,8 +184,18 @@ export default class Shape {
    * @param {int} stickyOffset
    *
    * @returns {boolean}
+   *
+   * @throws Error Missing arguments
    */
   static areStickable (a, b, stickyOffset) {
+    if (stickyOffset === undefined) {
+      throw new Error('Offset is undefined!')
+    }
+
+    if (a.collidesWith(b)) {
+      return false
+    }
+
     const boostedShape = new Shape(
       b.getX() - stickyOffset,
       b.getY() - stickyOffset,
@@ -158,6 +207,6 @@ export default class Shape {
   }
 
   toString () {
-    return `Shape(${this.x}, ${this.y}, ${this.width}, ${this.heigh}, ${this.fill})`
+    return `Shape(${this.x}, ${this.y}, ${this.width}, ${this.height}, ${this.fill})`
   }
 }

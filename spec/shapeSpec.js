@@ -40,7 +40,7 @@ describe('Class Shape', () => {
 
   describe('Should be drawable', () => {
     it('by Canvas', () => {
-      let ctx = jasmine.createSpyObj('ctx', ['fillRect', 'fillStyle'])
+      let ctx = jasmine.createSpyObj('ctx', ['fillRect', 'fillStyle', 'strokeRect'])
 
       shape.draw(ctx)
 
@@ -127,7 +127,7 @@ describe('Class Shape', () => {
     })
   })
 
-  describe('Should allow snapping', () => {
+  describe('Should detect allowing snapping', () => {
     using({
       'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH),
       'move down': new Shape(shape.getX(), shape.getOffsetY() + snapToOffset, shapeW, shapeH),
@@ -147,8 +147,9 @@ describe('Class Shape', () => {
     })
   })
 
-  describe('Should NOT allow snapping', () => {
+  describe('Should NOT detect allowing allow snapping', () => {
     using({
+      'itself': new Shape(shape.getX(), shape.getY(), shapeW, shapeH),
       'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset - 1, shapeW, shapeH),
       'move down': new Shape(shape.getX(), shape.getOffsetY() + snapToOffset + 1, shapeW, shapeH),
       'move left': new Shape(shape.getX() - shape.getWidth() - snapToOffset - 1, shape.getY(), shapeW, shapeH),
@@ -156,6 +157,20 @@ describe('Class Shape', () => {
     }, (notSnapToShape, description) => {
       it(`${notSnapToShape} to the ${shape} (${description})`, () => {
         expect(notSnapToShape.isStickableTo(shape, snapToOffset)).toBeFalsy()
+      })
+    })
+  })
+
+  // @todo add more test cases
+  describe('Should snap one shape to other', () => {
+    using({
+      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH)
+    }, (shapeToBeSnapedTo, description) => {
+      it(`${shapeToBeSnapedTo} to the ${shape} (${description})`, () => {
+        shapeToBeSnapedTo.snapTo(shape)
+
+        expect(shapeToBeSnapedTo.getX(shape)).toBe(shape.getX())
+        expect(shapeToBeSnapedTo.getY(shape)).toBe(shape.getY() - shape.getHeight())
       })
     })
   })
