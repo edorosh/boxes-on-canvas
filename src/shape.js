@@ -63,6 +63,14 @@ export default class Shape {
 
   /**
    * @todo test this more
+   * @return {boolean}
+   */
+  isInCollisionState () {
+    return this.fill === Shape.collideFillColor
+  }
+
+  /**
+   * @todo test this more
    */
   setSelectedState () {
     this.fill = Shape.selectedColor

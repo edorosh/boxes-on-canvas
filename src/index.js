@@ -31,10 +31,6 @@ function initBoxApp () {
     // Not Snap to
     .add(new Shape(480, 10, 80, 80))
     .add(new Shape(600, 10, 80, 80))
-
-    .update()
-
-    .draw()
 }
 
 document.addEventListener('DOMContentLoaded', initBoxApp)

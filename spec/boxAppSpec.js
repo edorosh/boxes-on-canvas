@@ -20,14 +20,42 @@ describe('Class Box App represents drawing component', () => {
   //   expect(boxApp.has(shape)).toBeTruthy()
   // })
 
-  it('Should draw added Shapes on the canvas', () => {
+  // it('Should draw added Shapes on the canvas', () => {
+  //   const shape = new Shape(5, 5, 4, 2)
+  //
+  //   spyOn(shape, 'draw')
+  //
+  //   boxApp.add(shape)
+  //   boxApp.draw()
+  //
+  //   expect(shape.draw).toHaveBeenCalledWith(ctxMock)
+  // })
+
+  it('Should fire event on object move', () => {
     const shape = new Shape(5, 5, 4, 2)
+    const shapeMoving = new Shape(10, 5, 4, 2)
+    const movingHandler = jasmine.createSpy('movingHandler')
 
-    spyOn(shape, 'draw')
+    boxApp
+      .add(shape)
+      .add(shapeMoving)
 
-    boxApp.add(shape)
-    boxApp.draw()
+    const event = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true
+    })
 
-    expect(shape.draw).toHaveBeenCalledWith(ctxMock)
+    canvasEl.dispatchEvent(event)
+
+    boxApp.on('shape:moving', movingHandler)
+
+    // mouse down and drag 1 px left and mouse up
+    expect(movingHandler.calls.count()).toEqual(1)
+    expect(movingHandler).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        current: shapeMoving
+      })
+    )
   })
 })
