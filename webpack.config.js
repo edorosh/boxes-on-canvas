@@ -7,17 +7,17 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.js'
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        }
-      }
-    ]
-  },
+  // module: {
+  //   rules: [
+  //     {
+  //       test: /\.js$/,
+  //       exclude: /node_modules/,
+  //       use: {
+  //         loader: 'babel-loader'
+  //       }
+  //     }
+  //   ]
+  // },
   mode: 'development',
   optimization: {
     usedExports: true
@@ -27,5 +27,6 @@ module.exports = {
       template: './src/index.html',
       filename: './index.html'
     })
-  ]
+  ],
+  devtool: 'true'
 }

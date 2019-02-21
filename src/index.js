@@ -17,8 +17,8 @@ function initBoxApp () {
     .add(new Shape(69, 30, 80, 80))
 
     // Border
-    .add(new Shape(220, 10, 80, 80))
-    .add(new Shape(220, 90, 80, 80))
+    .add(new Shape(221.222, 10, 80, 80))
+    .add(new Shape(221.222, 90, 80, 80))
 
     // Snap to
     .add(new Shape(351, 200, 80, 80))

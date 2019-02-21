@@ -10,6 +10,7 @@ export default class BoxApp {
     this.selectedForDragAndDropShape = null
     this.selectedForDragAndDropShapeOffset = null
     this.initialDragAndDropPoint = null
+    this.generator = null
   }
 
   setUpEvents () {
@@ -42,8 +43,60 @@ export default class BoxApp {
       if (this.selectedForDragAndDropShape !== null && this.initialDragAndDropPoint !== null) {
         if (this.selectedForDragAndDropShape.isInCollisionState()) {
           // @todo add animation
-          this.selectedForDragAndDropShape.x = this.initialDragAndDropPoint.x
-          this.selectedForDragAndDropShape.y = this.initialDragAndDropPoint.y
+          // this.selectedForDragAndDropShape.x = this.initialDragAndDropPoint.x
+          // this.selectedForDragAndDropShape.y = this.initialDragAndDropPoint.y
+
+          const self = this
+          const shape = this.selectedForDragAndDropShape
+          const initialPoint = this.initialDragAndDropPoint
+
+          // get line
+          const ax = this.initialDragAndDropPoint.y - this.selectedForDragAndDropShape.y
+          const by = this.selectedForDragAndDropShape.x - this.initialDragAndDropPoint.x
+          const c = this.initialDragAndDropPoint.x * this.selectedForDragAndDropShape.y - this.selectedForDragAndDropShape.x * this.initialDragAndDropPoint.y
+
+          console.log(ax, by, c)
+
+          this.generator = (function * () {
+            while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
+              const step = 1
+
+              // @todo refactor this
+              // move X
+              if (shape.y === initialPoint.y) {
+                if (shape.x < initialPoint.x) {
+                  shape.x += step
+                  shape.x = shape.x > initialPoint.x && initialPoint.x || shape.x
+                } else {
+                  shape.x -= step
+                  shape.x = shape.x < initialPoint.x && initialPoint.x || shape.x
+                }
+              } else if (shape.x === initialPoint.x) {
+                // move Y
+                if (shape.y < initialPoint.y) {
+                  shape.y += step
+                  shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
+                } else {
+                  shape.y -= step
+                  shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                }
+              }
+              else {
+                // move both
+                if (shape.y < initialPoint.y) {
+                  shape.y += step
+                  shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
+                } else {
+                  shape.y -= step
+                  shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                }
+                shape.x = (-c - by * shape.y) / ax
+              }
+
+              self.forceRedraw()
+              yield
+            }
+          })()
         }
       }
 
@@ -97,7 +150,6 @@ export default class BoxApp {
     }
   }
 
-
   /**
    * @param {Shape} shape
    *
@@ -105,7 +157,6 @@ export default class BoxApp {
    */
   add (shape) {
     this.shapes.push(shape)
-    this.update()
     this.forceRedraw()
 
     return this
@@ -118,7 +169,7 @@ export default class BoxApp {
    */
   update () {
     this.clearShapeState()
-    this.handleSnapTos()
+    // this.handleSnapTos()
     this.handleCollisions()
 
     return this
@@ -141,6 +192,18 @@ export default class BoxApp {
     }
 
     return null
+  }
+
+  handleGenerator () {
+    if (this.generator === null) {
+      return
+    }
+
+    let next = this.generator.next()
+
+    if (next.done) {
+      this.generator = null
+    }
   }
 
   handleSnapTos () {
@@ -181,15 +244,18 @@ export default class BoxApp {
   }
 
   run () {
+    window.requestAnimationFrame(this.run.bind(this))
+
+    this.handleGenerator()
+
     if (this.redraw !== false) {
       console.log('run')
       this.update()
       this.draw()
+
     }
 
     this.redraw = false
-
-    window.requestAnimationFrame(this.run.bind(this))
   }
 
   draw () {
