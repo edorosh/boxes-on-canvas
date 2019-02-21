@@ -10,6 +10,8 @@ function initBoxApp () {
   })
 
   boxApp
+    .setUpEvents()
+
     // Collide
     .add(new Shape(10, 10, 80, 80))
     .add(new Shape(69, 30, 80, 80))
@@ -31,6 +33,7 @@ function initBoxApp () {
     .add(new Shape(600, 10, 80, 80))
 
     .update()
+
     .draw()
 }
 

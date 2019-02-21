@@ -4,11 +4,15 @@ export default class Shape {
   }
 
   static get collideFillColor () {
-    return '#FF0000'
+    return '#AA0000'
   }
 
   static get strokeColor () {
     return '#000000'
+  }
+
+  static get selectedColor() {
+    return '#008000'
   }
 
   /**
@@ -60,7 +64,14 @@ export default class Shape {
   /**
    * @todo test this more
    */
-  resetCollisionState () {
+  setSelectedState () {
+    this.fill = Shape.selectedColor
+  }
+
+  /**
+   * @todo test this more
+   */
+  resetState () {
     this.fill = Shape.defaultFillColor
   }
 
@@ -76,6 +87,14 @@ export default class Shape {
 
     ctx.fillStyle = this.fill
     ctx.fillRect(this.x, this.y, this.width, this.height)
+  }
+
+  /**
+   * @todo add unit test / move to static
+   */
+  containsPoint (point) {
+    return (this.x <= point.x && this.getOffsetX() >= point.x) &&
+      (this.y <= point.y && this.getOffsetY() >= point.y)
   }
 
   collidesWith (otherShape) {
@@ -132,6 +151,10 @@ export default class Shape {
     if (snapToShape.getOffsetY() < this.getY()) {
       this.y = snapToShape.getOffsetY() + borderOffset
     }
+  }
+
+  toString () {
+    return `Shape(${this.x}, ${this.y}, ${this.width}, ${this.height}, ${this.fill})`
   }
 
   /**
@@ -204,9 +227,5 @@ export default class Shape {
     )
 
     return Shape.collideOrBorder(a, boostedShape)
-  }
-
-  toString () {
-    return `Shape(${this.x}, ${this.y}, ${this.width}, ${this.height}, ${this.fill})`
   }
 }

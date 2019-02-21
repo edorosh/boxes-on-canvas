@@ -6,7 +6,44 @@ export default class BoxApp {
     this.ctx = canvasEl.getContext('2d')
     this.shapes = []
     this.snapToOffset = options.snapToOffset || 0
+    this.redraw = true
   }
+
+  setUpEvents () {
+    window.requestAnimationFrame(this.draw.bind(this), this.canvasEl);
+    // canvas.addEventListener('mouseup',);
+    // canvas.addEventListener('mousemove',);
+    // canvas.addEventListener('mousedown',);
+
+    this.canvasEl.addEventListener('click', (e) => {
+      const point = this.getMousePos(e)
+      const size = this.shapes.length
+
+      this.update()
+
+      for (let i = 0; i < size; i++) {
+        let shape = this.shapes[i]
+
+        if (shape.containsPoint(point)) {
+          shape.setSelectedState()
+        }
+      }
+
+      this.redraw = true
+    })
+
+    return this
+  }
+
+  getMousePos (e) {
+    const rect = this.canvasEl.getBoundingClientRect()
+
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    }
+  }
+
 
   /**
    * @param {Shape} shape
@@ -15,6 +52,8 @@ export default class BoxApp {
    */
   add (shape) {
     this.shapes.push(shape)
+    this.update()
+    this.redraw = true
 
     return this
   }
@@ -25,10 +64,15 @@ export default class BoxApp {
    * @returns {this}
    */
   update () {
+    this.clearShapeState()
     this.handleSnapTos()
     this.handleCollisions()
 
     return this
+  }
+
+  clearShapeState() {
+    this.shapes.forEach((shape) => shape.resetState())
   }
 
   handleSnapTos () {
@@ -48,8 +92,6 @@ export default class BoxApp {
   }
 
   handleCollisions () {
-    this.shapes.forEach((shape) => shape.resetCollisionState())
-
     const size = this.shapes.length
 
     for (let i = 0; i < size; i++) {
@@ -71,10 +113,21 @@ export default class BoxApp {
   }
 
   draw () {
+    if (this.redraw === false) {
+      window.requestAnimationFrame(this.draw.bind(this))
+      return
+    }
+
+    console.log('redraw frame')
+
     this.clear()
 
     this.shapes.forEach((shape) => {
       shape.draw(this.ctx)
     })
+
+    this.redraw = false
+
+    window.requestAnimationFrame(this.draw.bind(this))
   }
 }
