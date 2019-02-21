@@ -59,7 +59,7 @@ export default class BoxApp {
 
           this.generator = (function * () {
             while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
-              const step = 1
+              const step = 3
 
               // @todo refactor this
               // move X
@@ -117,8 +117,17 @@ export default class BoxApp {
 
         this.forceRedraw()
       }
-      // const selectedShape = this.getSelectedShape(point)
+      const selectedShape = this.getSelectedShape(point)
+
       // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
+      const size = this.shapes.length
+
+      for (let i = 0; i < size; i++) {
+        let shape = this.shapes[i]
+        if (selectedShape.isStickableTo(shape, this.snapToOffset)) {
+          selectedShape.snapTo(shape)
+        }
+      }
     })
 
     this.canvasEl.addEventListener('click', (e) => {

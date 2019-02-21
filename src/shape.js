@@ -4,7 +4,7 @@ export default class Shape {
   }
 
   static get collideFillColor () {
-    return '#AA0000'
+    return 'rgba(255,0,0,.6)'
   }
 
   static get strokeColor () {
