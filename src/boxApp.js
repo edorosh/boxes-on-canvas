@@ -1,3 +1,6 @@
+/**
+ * @todo Add internal classes to make private methods
+ */
 export default class BoxApp {
   constructor (canvasEl, options = {}) {
     this.canvasEl = canvasEl
