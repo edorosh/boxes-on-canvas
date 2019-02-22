@@ -1,8 +1,6 @@
 export default class BoxApp {
   constructor (canvasEl, options = {}) {
     this.canvasEl = canvasEl
-    this.width = canvasEl.width
-    this.height = canvasEl.height
     this.ctx = canvasEl.getContext('2d')
     this.shapes = []
     this.snapToOffset = options.snapToOffset || 0
@@ -11,10 +9,40 @@ export default class BoxApp {
     this.selectedForDragAndDropShapeOffset = null
     this.initialDragAndDropPoint = null
     this.generator = null
+    this.fullViewportMode = false
+  }
+
+  get canvasHeight () {
+    return this.canvasEl.height
+  }
+
+  get canvasWidth () {
+    return this.canvasEl.width
+  }
+
+  /**
+   * @return {this}
+   */
+  enterFullViewportMode () {
+    this.fullViewportMode = true
+    this.setUpFullViewportMode()
+    return this
+  }
+
+  setUpFullViewportMode () {
+    if (!this.fullViewportMode) {
+      return
+    }
+
+    this.canvasEl.width = window.innerWidth - this.canvasEl.offsetLeft * 2
+    this.canvasEl.height = window.innerHeight - this.canvasEl.offsetTop * 2
+
+    this.forceRedraw()
   }
 
   setUpEvents () {
-    window.requestAnimationFrame(this.run.bind(this), this.canvasEl);
+    window.requestAnimationFrame(this.run.bind(this), this.canvasEl)
+    window.onresize = this.setUpFullViewportMode.bind(this)
 
     this.canvasEl.addEventListener('mousedown', e => {
       const point = this.getMousePos(e)
@@ -106,7 +134,12 @@ export default class BoxApp {
     })
 
     this.canvasEl.addEventListener('mousemove', e => {
+      if (!this.selectedForDragAndDropShape) {
+        return
+      }
+
       const point = this.getMousePos(e)
+
       if (this.selectedForDragAndDropShape !== null) {
 
         this.selectedForDragAndDropShape.x = point.x - this.selectedForDragAndDropShapeOffset.x
@@ -115,7 +148,8 @@ export default class BoxApp {
         this.forceRedraw()
       }
 
-      // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
+      console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
+
       const size = this.shapes.length
 
       for (let i = 0; i < size; i++) {
@@ -245,7 +279,7 @@ export default class BoxApp {
   }
 
   clear () {
-    this.ctx.clearRect(0, 0, this.width, this.height)
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
   }
 
   run () {

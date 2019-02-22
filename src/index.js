@@ -12,6 +12,7 @@ function initBoxApp () {
 
   boxApp
     .setUpEvents()
+    .enterFullViewportMode()
 
     // Collide
     .add(new Shape(10, 10, 80, 80))
