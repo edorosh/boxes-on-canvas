@@ -8,8 +8,8 @@ export default class BoxApp {
     this.selectedForDragAndDropShape = null
     this.selectedForDragAndDropShapeOffset = null
     this.initialDragAndDropPoint = null
-    this.generator = null
     this.fullViewportMode = false
+    this.animation = []
   }
 
   get canvasHeight () {
@@ -82,46 +82,48 @@ export default class BoxApp {
           console.log(ax, by, c)
 
           // animation
-          this.generator = (function * () {
-            while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
-              const step = 3
+          this.animation.push(
+            (function * () {
+              while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
+                const step = 3
 
-              // @todo refactor this
-              // move X
-              if (shape.y === initialPoint.y) {
-                if (shape.x < initialPoint.x) {
-                  shape.x += step
-                  shape.x = shape.x > initialPoint.x && initialPoint.x || shape.x
-                } else {
-                  shape.x -= step
-                  shape.x = shape.x < initialPoint.x && initialPoint.x || shape.x
+                // @todo refactor this
+                // move X
+                if (shape.y === initialPoint.y) {
+                  if (shape.x < initialPoint.x) {
+                    shape.x += step
+                    shape.x = shape.x > initialPoint.x && initialPoint.x || shape.x
+                  } else {
+                    shape.x -= step
+                    shape.x = shape.x < initialPoint.x && initialPoint.x || shape.x
+                  }
+                } else if (shape.x === initialPoint.x) {
+                  // move Y
+                  if (shape.y < initialPoint.y) {
+                    shape.y += step
+                    shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
+                  } else {
+                    shape.y -= step
+                    shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                  }
                 }
-              } else if (shape.x === initialPoint.x) {
-                // move Y
-                if (shape.y < initialPoint.y) {
-                  shape.y += step
-                  shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
-                } else {
-                  shape.y -= step
-                  shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                else {
+                  // move both
+                  if (shape.y < initialPoint.y) {
+                    shape.y += step
+                    shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
+                  } else {
+                    shape.y -= step
+                    shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                  }
+                  shape.x = (-c - by * shape.y) / ax
                 }
-              }
-              else {
-                // move both
-                if (shape.y < initialPoint.y) {
-                  shape.y += step
-                  shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
-                } else {
-                  shape.y -= step
-                  shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
-                }
-                shape.x = (-c - by * shape.y) / ax
-              }
 
-              self.forceRedraw()
-              yield
-            }
+                self.forceRedraw()
+                yield
+              }
           })()
+          )
         }
       }
 
@@ -233,16 +235,18 @@ export default class BoxApp {
     return null
   }
 
-  handleGenerator () {
-    if (this.generator === null) {
+  handleAnimation () {
+    if (!this.animation.length) {
       return
     }
 
-    let next = this.generator.next()
+    this.animation.forEach(function(animation, index, object) {
+      let next = animation.next()
 
-    if (next.done) {
-      this.generator = null
-    }
+      if (next.done) {
+        object.splice(index, 1);
+      }
+    })
   }
 
   handleSnapTos () {
@@ -285,7 +289,7 @@ export default class BoxApp {
   run () {
     window.requestAnimationFrame(this.run.bind(this))
 
-    this.handleGenerator()
+    this.handleAnimation()
 
     if (this.redraw !== false) {
       console.log('run')
