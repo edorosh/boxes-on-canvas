@@ -42,10 +42,6 @@ export default class BoxApp {
     this.canvasEl.addEventListener('mouseup', e => {
       if (this.selectedForDragAndDropShape !== null && this.initialDragAndDropPoint !== null) {
         if (this.selectedForDragAndDropShape.isInCollisionState()) {
-          // @todo add animation
-          // this.selectedForDragAndDropShape.x = this.initialDragAndDropPoint.x
-          // this.selectedForDragAndDropShape.y = this.initialDragAndDropPoint.y
-
           const self = this
           const shape = this.selectedForDragAndDropShape
           const initialPoint = this.initialDragAndDropPoint
@@ -57,6 +53,7 @@ export default class BoxApp {
 
           console.log(ax, by, c)
 
+          // animation
           this.generator = (function * () {
             while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
               const step = 3
@@ -117,15 +114,14 @@ export default class BoxApp {
 
         this.forceRedraw()
       }
-      const selectedShape = this.getSelectedShape(point)
 
       // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
       const size = this.shapes.length
 
       for (let i = 0; i < size; i++) {
         let shape = this.shapes[i]
-        if (selectedShape.isStickableTo(shape, this.snapToOffset)) {
-          selectedShape.snapTo(shape)
+        if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
+          this.selectedForDragAndDropShape.snapTo(shape)
         }
       }
     })
