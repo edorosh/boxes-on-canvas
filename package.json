@@ -11,6 +11,7 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.0",
     "eslint": "^5.13.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
@@ -22,6 +23,8 @@
     "jasmine": "^3.3.1",
     "jasmine-console-reporter": "^3.1.0",
     "jasmine-data-provider": "^2.2.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "style-loader": "^0.23.1",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14"
@@ -31,9 +34,10 @@
     "cs-src-fix": "eslint --fix src/",
     "cs-spec-fix": "eslint --fix spec/",
     "cs-all-fix": "eslint --fix src/ spec/",
-    "build": "webpack --config webpack.config.js",
-    "start": "webpack-dev-server --open --hot --mode development --config webpack.config.js",
-    "watch": "webpack --watch"
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
+    "start": "webpack-dev-server --mode development --open"
   },
   "author": "Eugene Dorosh",
   "license": "ISC"

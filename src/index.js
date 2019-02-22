@@ -1,5 +1,6 @@
 import Shape from './shape'
 import BoxApp from './boxApp'
+import style from './css/main.css'
 
 const canvasId = 'canvas'
 
