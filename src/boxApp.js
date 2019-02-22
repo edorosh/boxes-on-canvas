@@ -10,6 +10,8 @@ export default class BoxApp {
     this.initialDragAndDropPoint = null
     this.fullViewportMode = false
     this.animation = []
+
+    this.setUpEvents()
   }
 
   get canvasHeight () {

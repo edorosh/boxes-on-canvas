@@ -11,7 +11,6 @@ function initBoxApp () {
   })
 
   boxApp
-    .setUpEvents()
     .enterFullViewportMode()
 
     // Collide
