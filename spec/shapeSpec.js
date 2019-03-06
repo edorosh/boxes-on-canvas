@@ -161,7 +161,6 @@ describe('Class Shape', () => {
     })
   })
 
-  // @todo add more test cases
   describe('Should snap one shape to other', () => {
     using({
       'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH)

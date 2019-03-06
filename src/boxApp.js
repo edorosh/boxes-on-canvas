@@ -69,7 +69,7 @@ export default class BoxApp {
         this.selectedForDragAndDropShape = selectedShape
       }
 
-      // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
+      console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
     })
 
     this.canvasEl.addEventListener('mouseup', e => {
@@ -97,29 +97,28 @@ export default class BoxApp {
                 if (shape.y === initialPoint.y) {
                   if (shape.x < initialPoint.x) {
                     shape.x += step
-                    shape.x = shape.x > initialPoint.x && initialPoint.x || shape.x
+                    shape.x = (shape.x > initialPoint.x && initialPoint.x) || shape.x
                   } else {
                     shape.x -= step
-                    shape.x = shape.x < initialPoint.x && initialPoint.x || shape.x
+                    shape.x = (shape.x < initialPoint.x && initialPoint.x) || shape.x
                   }
                 } else if (shape.x === initialPoint.x) {
                   // move Y
                   if (shape.y < initialPoint.y) {
                     shape.y += step
-                    shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
+                    shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
                   } else {
                     shape.y -= step
-                    shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                    shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
                   }
-                }
-                else {
+                } else {
                   // move both
                   if (shape.y < initialPoint.y) {
                     shape.y += step
-                    shape.y = shape.y > initialPoint.y && initialPoint.y || shape.y
+                    shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
                   } else {
                     shape.y -= step
-                    shape.y = shape.y < initialPoint.y && initialPoint.y || shape.y
+                    shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
                   }
                   shape.x = (-c - by * shape.y) / ax
                 }
@@ -127,7 +126,7 @@ export default class BoxApp {
                 self.forceRedraw()
                 yield
               }
-          })()
+            })()
           )
         }
       }
@@ -148,7 +147,6 @@ export default class BoxApp {
       const point = this.getMousePos(e)
 
       if (this.selectedForDragAndDropShape !== null) {
-
         this.selectedForDragAndDropShape.x = point.x - this.selectedForDragAndDropShapeOffset.x
         this.selectedForDragAndDropShape.y = point.y - this.selectedForDragAndDropShapeOffset.y
 
@@ -215,7 +213,7 @@ export default class BoxApp {
    */
   update () {
     this.clearShapeState()
-    // this.handleSnapTos()
+    this.handleSnapTos()
     this.handleCollisions()
 
     return this
@@ -245,15 +243,18 @@ export default class BoxApp {
       return
     }
 
-    this.animation.forEach(function(animation, index, object) {
+    this.animation.forEach(function (animation, index, object) {
       let next = animation.next()
 
       if (next.done) {
-        object.splice(index, 1);
+        object.splice(index, 1)
       }
     })
   }
 
+  /**
+   * @todo disable snap to during animation
+   */
   handleSnapTos () {
     const size = this.shapes.length
 
@@ -300,7 +301,6 @@ export default class BoxApp {
       console.log('run')
       this.update()
       this.draw()
-
     }
 
     this.redraw = false

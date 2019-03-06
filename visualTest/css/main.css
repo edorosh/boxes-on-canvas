@@ -4,6 +4,7 @@ body {
     border: none;
 }
 
-#canvas {
+canvas {
     border: 1px solid black;
+    margin: 5px;
 }

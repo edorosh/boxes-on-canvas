@@ -11,7 +11,7 @@ export default class Shape {
     return '#000000'
   }
 
-  static get selectedColor() {
+  static get selectedColor () {
     return '#008000'
   }
 
@@ -27,7 +27,7 @@ export default class Shape {
     this.width = width
     this.height = height
     this.fill = Shape.defaultFillColor
-    this.borderWidth = 3
+    this.borderWidth = 1
   }
 
   getX () {
@@ -89,12 +89,16 @@ export default class Shape {
    * @param ctx
    */
   draw (ctx) {
+    ctx.save()
+
+    ctx.fillStyle = this.fill
+    ctx.fillRect(this.x, this.y, this.width, this.height)
+
     ctx.strokeStyle = Shape.strokeColor
     ctx.lineWidth = this.borderWidth
     ctx.strokeRect(this.x, this.y, this.width, this.height)
 
-    ctx.fillStyle = this.fill
-    ctx.fillRect(this.x, this.y, this.width, this.height)
+    ctx.restore()
   }
 
   /**
@@ -134,11 +138,10 @@ export default class Shape {
    */
   snapTo (snapToShape) {
     if (this.collidesWith(snapToShape)) {
-
       throw new Error('Snap to shape being in collision is not supported!')
     }
 
-    const borderOffset = Math.floor(this.borderWidth / 2) + 1
+    const borderOffset = 0
 
     // shift left
     if (snapToShape.getOffsetX() < this.getX()) {

@@ -1,59 +1,272 @@
-describe('hello', function(){
+describe('Shape Interactions', function(){
 
-  let boxApp, canvasEl;
+  let boxApp, canvasEl, canvasCounter = 1, snapToOffset = 20;
 
-  // inject the HTML fixture for the tests
+  beforeAll(function() {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<p>Canvas samples</p>')
+
+    // @todo add css fixtures
+  })
+
   beforeEach(function() {
-    var fixture = `<canvas id="canvas" width="800" height="600"> 
+    this.canvasSelector = `canvas-${canvasCounter}`
+
+    var fixture = `<canvas id="${this.canvasSelector}" width="300" height="280"> 
     This text is displayed if your browser does not support HTML5 Canvas. 
     </canvas>`;
 
     document.body.insertAdjacentHTML(
-      'afterbegin',
+      'beforeend',
       fixture);
-  });
 
-  // remove the html fixture from the DOM
-  afterEach(function() {
-    // document.body.removeChild(document.getElementById('canvas'));
-  });
-
-  // call the init function of calculator to register DOM elements
-  beforeEach(function() {
-    canvasEl = document.querySelector('canvas')
+    canvasEl = document.querySelector('#' + this.canvasSelector)
     boxApp = new BoxApp(canvasEl, {
-      'snapToOffset': 20
+      'snapToOffset': snapToOffset
     })
+
   });
 
+  afterEach(function() {
+    // document.body.removeChild(document.getElementById(`${this.canvasSelector}`));
+    canvasCounter++;
+  });
 
-  it('should say hello', function(){
-
+  it('should be in collision', function() {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(69, 30, 80, 80)
 
     boxApp
-      .enterFullViewportMode()
+      .add(shape1)
+      .add(shape2)
+      .run()
 
-      // Collide
-      .add(new Shape(10, 10, 80, 80))
-      .add(new Shape(69, 30, 80, 80))
+    expect(shape1.fill).toBe(Shape.collideFillColor)
+    expect(shape2.fill).toBe(Shape.collideFillColor)
+  })
 
-      // Border
-      .add(new Shape(221.222, 10, 80, 80))
-      .add(new Shape(221.222, 90, 80, 80))
+  it('should not be in collision if borders', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, 90, 80, 80)
 
-      // Snap to
-      .add(new Shape(351, 200, 80, 80))
-      .add(new Shape(351, 110, 80, 80))
-      .add(new Shape(351, 290, 80, 80))
-      .add(new Shape(441, 200, 80, 80))
-      .add(new Shape(261, 200, 80, 80))
-      .add(new Shape(441, 110, 80, 80))
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .run()
 
-      // Not Snap to
-      .add(new Shape(480, 10, 80, 80))
-      .add(new Shape(600, 10, 80, 80))
+    expect(shape1.fill).toBe(Shape.defaultFillColor)
+    expect(shape2.fill).toBe(Shape.defaultFillColor)
 
+    expect(shape2.bordersWith(shape1)).toBeTruthy()
+  })
 
-    expect('hello world').toBe('hello world');
+  it('should process snap tos', function() {
+    const shape1 = new Shape(100, 10, 80, 80)
+    const shape2 = new Shape(100, 100, 80, 80)
+    const shape3 = new Shape(100, 190, 80, 80)
+    const shape4 = new Shape(10, 100, 80, 80)
+
+    const shape5 = new Shape(190, 10, 80, 80)
+    const shape6 = new Shape(190, 100, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .add(shape3)
+      .add(shape4)
+      .add(shape5)
+      .add(shape6)
+      .run()
+
+    expect(shape1.bordersWith(shape2)).toBeTruthy()
+    expect(shape2.bordersWith(shape3)).toBeTruthy()
+    expect(shape4.bordersWith(shape2)).toBeTruthy()
+
+    expect(shape5.bordersWith(shape6)).toBeTruthy()
+    expect(shape2.bordersWith(shape5)).toBeTruthy()
+  })
+
+  it('should not snap to', function() {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .run()
+
+    expect(shape1.bordersWith(shape2)).toBeFalsy()
+  })
+
+  it('should track selected Shape', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .run()
+
+    const rect = canvasEl.getBoundingClientRect()
+
+    const eventDown = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top
+    })
+
+    const eventUp = new MouseEvent('mouseup', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top
+    })
+
+    canvasEl.dispatchEvent(eventDown)
+
+    boxApp.run()
+
+    expect(boxApp.selectedForDragAndDropShape).toBe(shape1)
+
+    canvasEl.dispatchEvent(eventUp)
+
+    boxApp.run()
+
+    expect(boxApp.selectedForDragAndDropShape).toBeNull()
+  })
+
+  it('should not track any Shape on blank click', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .run()
+
+    const eventDown = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 100,
+      clientY: 100
+    })
+
+    const eventUp = new MouseEvent('mouseup', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 100,
+      clientY: 100
+    })
+
+    canvasEl.dispatchEvent(eventDown)
+
+    boxApp.run()
+
+    expect(boxApp.selectedForDragAndDropShape).toBeNull()
+
+    canvasEl.dispatchEvent(eventUp)
+
+    boxApp.run()
+  })
+
+  it('should process collisions on object move', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .run()
+
+    const rect = canvasEl.getBoundingClientRect()
+
+    const eventDown = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top
+    })
+
+    const eventMove = new MouseEvent('mousemove', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top + shape1.getHeight()
+    })
+
+    canvasEl.dispatchEvent(eventDown)
+    boxApp.run()
+    canvasEl.dispatchEvent(eventMove)
+    boxApp.run()
+
+    boxApp.run()
+
+    expect(shape1.fill).toBe(Shape.collideFillColor)
+    expect(shape2.fill).toBe(Shape.collideFillColor)
+  })
+
+  it('should process collisions on object move and get back to position', (done) => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .run()
+
+    const rect = canvasEl.getBoundingClientRect()
+
+    const eventDown = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top
+    })
+    const eventMove = new MouseEvent('mousemove', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top + shape1.getHeight()
+    })
+    const eventUp = new MouseEvent('mouseup', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 52 + rect.left,
+      clientY: 52 + rect.top + shape1.getHeight()
+    })
+
+    canvasEl.dispatchEvent(eventDown)
+    boxApp.run()
+    canvasEl.dispatchEvent(eventMove)
+    boxApp.run()
+    canvasEl.dispatchEvent(eventUp)
+    boxApp.run()
+
+    const expectShapeGotBackToInitialPosition = function (done) {
+      // wait for animation to finish
+      if (boxApp.animation.length > 0) {
+        setTimeout(() => {
+          expectShapeGotBackToInitialPosition(done)
+        }, 100)
+
+        return
+      }
+
+      expect(shape1.fill).toBe(Shape.defaultFillColor)
+      expect(shape2.fill).toBe(Shape.defaultFillColor)
+
+      done()
+    }
+
+    expectShapeGotBackToInitialPosition(done)
   })
 })
