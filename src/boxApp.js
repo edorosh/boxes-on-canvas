@@ -13,6 +13,7 @@ export default class BoxApp {
     this.initialDragAndDropPoint = null
     this.fullViewportMode = false
     this.animation = []
+    this.useAnimation = options.useAnimation || false
 
     this.setUpEvents()
   }
@@ -95,48 +96,53 @@ export default class BoxApp {
 
           console.log(ax, by, c)
 
-          // animation
-          this.animation.push(
-            (function * () {
-              while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
-                const step = 3
+          if (this.useAnimation) {
+            this.animation.push(
+              (function * () {
+                while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
+                  const step = 3
 
-                // @todo refactor this
-                // move X
-                if (shape.y === initialPoint.y) {
-                  if (shape.x < initialPoint.x) {
-                    shape.x += step
-                    shape.x = (shape.x > initialPoint.x && initialPoint.x) || shape.x
+                  // @todo refactor this
+                  // move X
+                  if (shape.y === initialPoint.y) {
+                    if (shape.x < initialPoint.x) {
+                      shape.x += step
+                      shape.x = (shape.x > initialPoint.x && initialPoint.x) || shape.x
+                    } else {
+                      shape.x -= step
+                      shape.x = (shape.x < initialPoint.x && initialPoint.x) || shape.x
+                    }
+                  } else if (shape.x === initialPoint.x) {
+                    // move Y
+                    if (shape.y < initialPoint.y) {
+                      shape.y += step
+                      shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
+                    } else {
+                      shape.y -= step
+                      shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
+                    }
                   } else {
-                    shape.x -= step
-                    shape.x = (shape.x < initialPoint.x && initialPoint.x) || shape.x
+                    // move both
+                    if (shape.y < initialPoint.y) {
+                      shape.y += step
+                      shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
+                    } else {
+                      shape.y -= step
+                      shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
+                    }
+                    shape.x = (-c - by * shape.y) / ax
                   }
-                } else if (shape.x === initialPoint.x) {
-                  // move Y
-                  if (shape.y < initialPoint.y) {
-                    shape.y += step
-                    shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
-                  } else {
-                    shape.y -= step
-                    shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
-                  }
-                } else {
-                  // move both
-                  if (shape.y < initialPoint.y) {
-                    shape.y += step
-                    shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
-                  } else {
-                    shape.y -= step
-                    shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
-                  }
-                  shape.x = (-c - by * shape.y) / ax
+
+                  self.forceRedraw()
+                  yield
                 }
-
-                self.forceRedraw()
-                yield
-              }
-            })()
-          )
+              })()
+            )
+          } else {
+            shape.x = initialPoint.x
+            shape.y = initialPoint.y
+            self.forceRedraw()
+          }
         }
       }
 

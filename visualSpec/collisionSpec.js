@@ -23,7 +23,8 @@ describe('Shape Interactions', function(){
 
     canvasEl = document.querySelector('#' + this.canvasSelector)
     boxApp = new BoxApp(canvasEl, {
-      'snapToOffset': snapToOffset
+      'snapToOffset': snapToOffset,
+      'useAnimation': false
     })
 
   });
@@ -239,6 +240,16 @@ describe('Shape Interactions', function(){
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
 
+    const initialPoint1 = {
+      x: shape1.x,
+      y: shape1.y
+    }
+
+    const initialPoint2 = {
+      x: shape2.x,
+      y: shape2.y
+    }
+
     boxApp
       .add(shape1)
       .add(shape2)
@@ -287,6 +298,13 @@ describe('Shape Interactions', function(){
 
       expect(shape1.fill).toBe(Shape.defaultFillColor)
       expect(shape2.fill).toBe(Shape.defaultFillColor)
+
+      expect(shape1.x).toBe(initialPoint1.x)
+      expect(shape1.y).toBe(initialPoint1.y)
+
+      // Bug with wrong snapping on animation
+      expect(shape2.x).toBe(initialPoint2.x)
+      expect(shape2.y).toBe(initialPoint2.y)
 
       done()
     }
