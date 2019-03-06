@@ -40,7 +40,13 @@ describe('Class Shape', () => {
 
   describe('Should be drawable', () => {
     it('by Canvas', () => {
-      let ctx = jasmine.createSpyObj('ctx', ['fillRect', 'fillStyle', 'strokeRect'])
+      let ctx = jasmine.createSpyObj('ctx', [
+        'fillRect',
+        'fillStyle',
+        'strokeRect',
+        'save',
+        'restore'
+      ])
 
       shape.draw(ctx)
 
