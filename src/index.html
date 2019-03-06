@@ -22,33 +22,31 @@
     <script type="application/javascript">
       const canvasId = 'canvas'
 
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
       function initBoxApp () {
-        const boxApp = new BoxApp(document.querySelector(canvasId), {
-          'snapToOffset': 20
-        })
+        const snapToOffset = 20
 
-        boxApp
-          .enterFullViewportMode()
+        const boxApp = new BoxApp(document.querySelector(canvasId), { snapToOffset })
+        boxApp.enterFullViewportMode()
 
-          // Collide
-          .add(new Shape(10, 10, 80, 80))
-          .add(new Shape(69, 30, 80, 80))
+        const numOfShapes = 5
+        let shapeList = []
 
-          // Border
-          .add(new Shape(221.222, 10, 80, 80))
-          .add(new Shape(221.222, 90, 80, 80))
+        for (let i = 0; i < numOfShapes; i++) {
+            let shape = new Shape(
+              10,
+              i === 0 ? 10 : shapeList[i - 1].getOffsetY() + snapToOffset + getRandomInt(5, 10),
+              getRandomInt(80, 200),
+              getRandomInt(40, 80)
+            )
 
-          // Snap to
-          .add(new Shape(351, 200, 80, 80))
-          .add(new Shape(351, 110, 80, 80))
-          .add(new Shape(351, 290, 80, 80))
-          .add(new Shape(441, 200, 80, 80))
-          .add(new Shape(261, 200, 80, 80))
-          .add(new Shape(441, 110, 80, 80))
+            shapeList.push(shape)
+        }
 
-          // Not Snap to
-          .add(new Shape(480, 10, 80, 80))
-          .add(new Shape(600, 10, 80, 80))
+        shapeList.forEach((shape) => boxApp.add(shape))
       }
 
       document.addEventListener('DOMContentLoaded', initBoxApp)
