@@ -33,6 +33,30 @@ describe('Shape Interactions', function(){
     canvasCounter++;
   });
 
+  it('should calculate view port mode', function() {
+    const { width, height } = BoxApp.getViewportDimensionsForElement(canvasEl)
+
+    const offsetTop  = canvasEl.offsetTop * 2
+    const offsetWidth  = canvasEl.offsetLeft * 2
+
+    expect(width).toBe(window.innerWidth - offsetWidth)
+    expect(height).toBe(window.innerHeight - offsetTop)
+  })
+  it('should enter view port mode', function() {
+
+    const width = 120;
+    const height = 100;
+
+    spyOn(BoxApp, 'getViewportDimensionsForElement').and.returnValue({ width, height })
+
+    boxApp
+      .enterFullViewportMode()
+      .run()
+
+    expect(canvasEl.width).toBe(width)
+    expect(canvasEl.height).toBe(height)
+  })
+
   it('should be in collision', function() {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(69, 30, 80, 80)

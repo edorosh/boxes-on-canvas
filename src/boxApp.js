@@ -34,13 +34,22 @@ export default class BoxApp {
     return this
   }
 
+  static getViewportDimensionsForElement (element) {
+    return {
+      width: window.innerWidth - element.offsetLeft * 2,
+      height: window.innerHeight - element.offsetTop * 2
+    }
+  }
+
   setUpFullViewportMode () {
     if (!this.fullViewportMode) {
       return
     }
 
-    this.canvasEl.width = window.innerWidth - this.canvasEl.offsetLeft * 2
-    this.canvasEl.height = window.innerHeight - this.canvasEl.offsetTop * 2
+    const dimensions = BoxApp.getViewportDimensionsForElement(this.canvasEl)
+
+    this.canvasEl.width = dimensions.width
+    this.canvasEl.height = dimensions.height
 
     this.forceRedraw()
   }
