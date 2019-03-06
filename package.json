@@ -11,7 +11,9 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "babel-plugin-istanbul": "^5.1.1",
     "clean-webpack-plugin": "^1.0.1",
+    "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
     "eslint": "^5.13.0",
     "eslint-config-standard": "^12.0.0",
@@ -25,11 +27,13 @@
     "jasmine-console-reporter": "^3.1.0",
     "jasmine-core": "^3.3.0",
     "jasmine-data-provider": "^2.2.0",
-    "karma": "^4.0.0",
+    "karma": "^4.0.1",
     "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.2",
     "karma-jasmine": "^2.0.1",
     "karma-sourcemap-loader": "^0.3.7",
     "mini-css-extract-plugin": "^0.5.0",
+    "nyc": "^13.3.0",
     "style-loader": "^0.23.1",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
@@ -37,6 +41,7 @@
   },
   "scripts": {
     "test": "jasmine --reporter=jasmine-console-reporter",
+    "test-cover": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text jasmine",
     "cs-src-fix": "eslint --fix src/",
     "cs-spec-fix": "eslint --fix spec/",
     "cs-all-fix": "eslint --fix src/ spec/",
@@ -44,8 +49,13 @@
     "build": "webpack --mode production",
     "watch": "webpack --mode development --watch",
     "start": "webpack-dev-server --mode development --open",
-    "karma": "karma start"
+    "karma": "karma start",
+    "karma-cover": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text karma start"
   },
   "author": "Eugene Dorosh",
-  "license": "ISC"
+  "license": "ISC",
+  "nyc": {
+    "sourceMap": false,
+    "instrument": false
+  }
 }
