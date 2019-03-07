@@ -1,3 +1,5 @@
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/edorosh/boxes-on-canvas)
+
 # Boxes on Canvas (2D)
 The App draws boxes (rectangles) on a web page and allows an User to drag them. The app was developed 
 within my JS practices (Modules, Bundler, TDD).
