@@ -43,6 +43,7 @@ describe('Shape Interactions', function(){
     expect(width).toBe(window.innerWidth - offsetWidth)
     expect(height).toBe(window.innerHeight - offsetTop)
   })
+
   it('should enter view port mode', function() {
 
     const width = 120;
@@ -86,32 +87,6 @@ describe('Shape Interactions', function(){
     expect(shape2.bordersWith(shape1)).toBeTruthy()
   })
 
-  it('should process snap tos', function() {
-    const shape1 = new Shape(100, 10, 80, 80)
-    const shape2 = new Shape(100, 100, 80, 80)
-    const shape3 = new Shape(100, 190, 80, 80)
-    const shape4 = new Shape(10, 100, 80, 80)
-
-    const shape5 = new Shape(190, 10, 80, 80)
-    const shape6 = new Shape(190, 100, 80, 80)
-
-    boxApp
-      .add(shape1)
-      .add(shape2)
-      .add(shape3)
-      .add(shape4)
-      .add(shape5)
-      .add(shape6)
-      .run()
-
-    expect(shape1.bordersWith(shape2)).toBeTruthy()
-    expect(shape2.bordersWith(shape3)).toBeTruthy()
-    expect(shape4.bordersWith(shape2)).toBeTruthy()
-
-    expect(shape5.bordersWith(shape6)).toBeTruthy()
-    expect(shape2.bordersWith(shape5)).toBeTruthy()
-  })
-
   it('should not snap to', function() {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
@@ -124,7 +99,7 @@ describe('Shape Interactions', function(){
     expect(shape1.bordersWith(shape2)).toBeFalsy()
   })
 
-  it('should track selected Shape', () => {
+  it('should select the Shape on mouse down', () => {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
 
@@ -164,7 +139,7 @@ describe('Shape Interactions', function(){
     expect(boxApp.selectedForDragAndDropShape).toBeNull()
   })
 
-  it('should not track any Shape on blank click', () => {
+  it('should not select any Shape on mouse down', () => {
     const shape1 = new Shape(10, 10, 80, 80)
 
     boxApp
@@ -236,7 +211,7 @@ describe('Shape Interactions', function(){
     expect(shape2.fill).toBe(Shape.collideFillColor)
   })
 
-  it('should process collisions on object move and get back to position', (done) => {
+  it('should process collisions on object move and get back to initial position', (done) => {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
 
@@ -310,5 +285,34 @@ describe('Shape Interactions', function(){
     }
 
     expectShapeGotBackToInitialPosition(done)
+  })
+
+  xit('should snap draggable Shape to other Shape', function() {
+    const shape1 = new Shape(100, 10, 80, 80)
+    const shape2 = new Shape(100, 100, 80, 80)
+    const shape3 = new Shape(100, 190, 80, 80)
+    const shape4 = new Shape(10, 100, 80, 80)
+
+    const shape5 = new Shape(190, 10, 80, 80)
+    const shape6 = new Shape(190, 100, 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .add(shape3)
+      .add(shape4)
+      .add(shape5)
+      .add(shape6)
+      .run()
+
+    expect(shape1.bordersWith(shape2)).toBeTruthy()
+    expect(shape2.bordersWith(shape3)).toBeTruthy()
+    expect(shape4.bordersWith(shape2)).toBeTruthy()
+
+    expect(shape5.bordersWith(shape6)).toBeTruthy()
+    expect(shape2.bordersWith(shape5)).toBeTruthy()
+  })
+
+  xit('should snap draggable Shape to other Shape with no collisions', function() {
   })
 })

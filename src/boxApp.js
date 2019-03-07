@@ -271,17 +271,16 @@ export default class BoxApp {
    * @todo disable snap to during animation
    */
   handleSnapTos () {
-    const size = this.shapes.length
+    if (this.selectedForDragAndDropShape === null) {
+      return
+    }
 
-    for (let i = 0; i < size; i++) {
-      let shapeA = this.shapes[i]
+    for (let i = 0; i < this.shapes.length; i++) {
+      let shape = this.shapes[i]
 
-      for (let j = i + 1; j < size; j++) {
-        let shapeB = this.shapes[j]
-
-        if (shapeB.isStickableTo(shapeA, this.snapToOffset)) {
-          shapeB.snapTo(shapeA)
-        }
+      // @todo add collision check
+      if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
+        this.selectedForDragAndDropShape.snapTo(shape)
       }
     }
   }
