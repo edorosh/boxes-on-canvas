@@ -1,8 +1,15 @@
 language: node_js
 os:
   - linux
+
 node_js:
   - 10
+
 git:
   depth:
     1
+
+cache: npm
+
+after_script:
+  - "cat ./dist/reports/coverage/lcov.info | ./node_modules/.bin/coveralls"

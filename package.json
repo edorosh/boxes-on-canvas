@@ -41,7 +41,7 @@
     "webpack-dev-server": "^3.1.14"
   },
   "scripts": {
-    "test": "jasmine --reporter=jasmine-console-reporter",
+    "test": "jasmine --reporter=jasmine-console-reporter && npm run test-cover",
     "test-cover": "cross-env NODE_ENV=test nyc jasmine",
     "cs-src-fix": "eslint --fix src/",
     "cs-spec-fix": "eslint --fix spec/",
