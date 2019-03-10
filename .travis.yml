@@ -1,15 +1,32 @@
 language: node_js
+
 os:
   - linux
 
 node_js:
   - 10
 
+stages:
+  - Lint
+  - Build
+  - Unit Tests
+
 git:
   depth:
     1
 
-cache: npm
+cache:
+  directories:
+    - node_modules
+
+jobs:
+  include:
+    - stage: Lint
+      script: 'npm run lint && npm run lint-tests'
+    - stage: Build
+      script: 'npm run build'
+    - stage: Unit Tests
+      script: npm run test-ci
 
 after_script:
   - "cat ./dist/reports/coverage/lcov.info | ./node_modules/.bin/coveralls"
