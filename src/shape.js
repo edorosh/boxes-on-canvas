@@ -1,3 +1,5 @@
+import Point from './point'
+
 export default class Shape {
   static get defaultFillColor () {
     return '#AAAAAA'
@@ -16,40 +18,75 @@ export default class Shape {
   }
 
   /**
-   * @param {int} x
-   * @param {int} y
-   * @param {int} width
-   * @param {int} height
+   * @param {number} x
+   * @param {number} y
+   * @param {number} width
+   * @param {number} height
    */
   constructor (x, y, width, height) {
-    this.x = x
-    this.y = y
+    this.point = new Point(x, y)
     this.width = width
     this.height = height
     this.fill = Shape.defaultFillColor
     this.borderWidth = 1
   }
 
-  getX () {
-    return this.x
+  /**
+   * @return {number}
+   */
+  get x () {
+    return this.point.x
   }
 
-  getY () {
-    return this.y
+  /**
+   * @param {number} x
+   *
+   * @return {number}
+   */
+  set x (x) {
+    this.point = new Point(x, this.y)
   }
 
+  /**
+   * @return {number}
+   */
+  get y () {
+    return this.point.y
+  }
+
+  /**
+   * @param {number} y
+   *
+   * @return {number}
+   */
+  set y (y) {
+    this.point = new Point(this.x, y)
+  }
+
+  /**
+   * @return {number}
+   */
   getWidth () {
     return this.width
   }
 
+  /**
+   * @return {number}
+   */
   getHeight () {
     return this.height
   }
 
+  /**
+   * @return {number}
+   */
   getOffsetX () {
     return this.x + this.width
   }
 
+  /**
+   * @return {number}
+   */
   getOffsetY () {
     return this.y + this.height
   }
@@ -102,17 +139,26 @@ export default class Shape {
   }
 
   /**
-   * @todo add unit test / move to static
+   * @param {Point} point
    */
-  containsPoint (point) {
-    return (this.x <= point.x && this.getOffsetX() >= point.x) &&
-      (this.y <= point.y && this.getOffsetY() >= point.y)
+  hasPoint (point) {
+    return Shape.containsPoint(this, point)
   }
 
+  /**
+   * @param {Shape} otherShape
+   *
+   * @return {boolean}
+   */
   collidesWith (otherShape) {
     return Shape.collides(this, otherShape)
   }
 
+  /**
+   * @param {Shape} otherShape
+   *
+   * @return {boolean}
+   */
   bordersWith (otherShape) {
     return Shape.borders(this, otherShape)
   }
@@ -121,7 +167,9 @@ export default class Shape {
    * Detects if Other Shape sticks to the current
    *
    * @param {Shape} otherShape
-   * @param stickyOffset
+   * @param {number} stickyOffset
+   *
+   * @return {boolean}
    */
   isStickableTo (otherShape, stickyOffset) {
     return Shape.areStickable(this, otherShape, stickyOffset)
@@ -133,8 +181,6 @@ export default class Shape {
    * @param {Shape} snapToShape
    *
    * @throws Error In case of shape collisions
-   *
-   * @todo add more meaningful exception class
    */
   snapTo (snapToShape) {
     if (this.collidesWith(snapToShape)) {
@@ -144,28 +190,44 @@ export default class Shape {
     const borderOffset = 0
 
     // shift left
-    if (snapToShape.getOffsetX() < this.getX()) {
+    if (snapToShape.getOffsetX() < this.x) {
       this.x = snapToShape.getOffsetX() + borderOffset
     }
 
     // shift right
-    if (this.getOffsetX() < snapToShape.getX()) {
-      this.x = snapToShape.getX() - this.getWidth() - borderOffset
+    if (this.getOffsetX() < snapToShape.x) {
+      this.x = snapToShape.x - this.getWidth() - borderOffset
     }
 
     // shift down
-    if (this.getOffsetY() < snapToShape.getY()) {
-      this.y = snapToShape.getY() - this.getHeight() - borderOffset
+    if (this.getOffsetY() < snapToShape.y) {
+      this.y = snapToShape.y - this.getHeight() - borderOffset
     }
 
     // shift up
-    if (snapToShape.getOffsetY() < this.getY()) {
+    if (snapToShape.getOffsetY() < this.y) {
       this.y = snapToShape.getOffsetY() + borderOffset
     }
   }
 
+  /**
+   * @return {string}
+   */
   toString () {
     return `Shape(${this.x}, ${this.y}, ${this.width}, ${this.height}, ${this.fill})`
+  }
+
+  /**
+   * Detects if a Point is inside the given Shape
+   *
+   * @param {Shape} shape
+   * @param {Point} point
+   *
+   * @returns {boolean}
+   */
+  static containsPoint (shape, point) {
+    return (shape.x <= point.x && shape.getOffsetX() >= point.x) &&
+      (shape.y <= point.y && shape.getOffsetY() >= point.y)
   }
 
   /**
@@ -177,8 +239,8 @@ export default class Shape {
    * @returns {boolean}
    */
   static collides (a, b) {
-    return (a.getX() < b.getOffsetX() && a.getOffsetX() > b.getX()) &&
-      (a.getY() < b.getOffsetY() && a.getOffsetY() > b.getY())
+    return (a.x < b.getOffsetX() && a.getOffsetX() > b.x) &&
+      (a.y < b.getOffsetY() && a.getOffsetY() > b.y)
   }
 
   /**
@@ -190,8 +252,8 @@ export default class Shape {
    * @returns {boolean}
    */
   static collideOrBorder (a, b) {
-    return (a.getX() <= b.getOffsetX() && a.getOffsetX() >= b.getX()) &&
-      (a.getY() <= b.getOffsetY() && a.getOffsetY() >= b.getY())
+    return (a.x <= b.getOffsetX() && a.getOffsetX() >= b.x) &&
+      (a.y <= b.getOffsetY() && a.getOffsetY() >= b.y)
   }
 
   /**
@@ -202,11 +264,11 @@ export default class Shape {
    * @returns {boolean}
    */
   static borders (a, b) {
-    return (a.getX() <= b.getOffsetX() && a.getOffsetX() >= b.getX()) &&
-      (a.getY() <= b.getOffsetY() && a.getOffsetY() >= b.getY()) &&
+    return (a.x <= b.getOffsetX() && a.getOffsetX() >= b.x) &&
+      (a.y <= b.getOffsetY() && a.getOffsetY() >= b.y) &&
       !(
-        (a.getX() < b.getOffsetX() && a.getOffsetX() > b.getX()) &&
-        (a.getY() < b.getOffsetY() && a.getOffsetY() > b.getY())
+        (a.x < b.getOffsetX() && a.getOffsetX() > b.x) &&
+        (a.y < b.getOffsetY() && a.getOffsetY() > b.y)
       )
   }
 
@@ -215,7 +277,7 @@ export default class Shape {
    *
    * @param {Shape} a
    * @param {Shape} b
-   * @param {int} stickyOffset
+   * @param {number} stickyOffset
    *
    * @returns {boolean}
    *
@@ -231,8 +293,8 @@ export default class Shape {
     }
 
     const boostedShape = new Shape(
-      b.getX() - stickyOffset,
-      b.getY() - stickyOffset,
+      b.x - stickyOffset,
+      b.y - stickyOffset,
       b.getWidth() + stickyOffset * 2,
       b.getHeight() + stickyOffset * 2
     )
