@@ -154,7 +154,7 @@ describe('Class Shape', () => {
     })
   })
 
-  describe('Should NOT detect allowing allow snapping', () => {
+  describe('Should NOT detect allow snapping', () => {
     using({
       'itself': new Shape(shape.x, shape.y, shapeW, shapeH),
       'move up': new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset - 1, shapeW, shapeH),
@@ -168,15 +168,50 @@ describe('Class Shape', () => {
     })
   })
 
+  it('isStickableTo should catch undefined offset', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, 50, 80, 80)
+
+    expect(() => { shape1.isStickableTo(shape2) }).toThrowError(Error)
+  })
+
+  it('should not snap shapes in collision', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, 50, 80, 80)
+
+    expect(() => { shape1.snapTo(shape2) }).toThrowError(Error)
+  })
+
   describe('Should snap one shape to other', () => {
     using({
-      'move up': new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset, shapeW, shapeH)
-    }, (shapeToBeSnapedTo, description) => {
-      it(`${shapeToBeSnapedTo} to the ${shape} (${description})`, () => {
-        shapeToBeSnapedTo.snapTo(shape)
+      'move up': {
+        shape: new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset, shapeW, shapeH),
+        x: shape.x,
+        y: shape.y - shape.getHeight()
+      },
+      'move down': {
+        shape: new Shape(shape.x, shape.getOffsetY() + snapToOffset, shapeW, shapeH),
+        x: shape.x,
+        y: shape.getOffsetY()
+      },
+      'move left': {
+        shape: new Shape(shape.x - shape.getWidth() - snapToOffset, shape.y, shapeW, shapeH),
+        x: shape.x - shape.getWidth(),
+        y: shape.y
+      },
+      'move right': {
+        shape: new Shape(shape.x + shape.getWidth() + snapToOffset, shape.y, shapeW, shapeH),
+        x: shape.x + shape.getWidth(),
+        y: shape.y
+      }
+    }, (config, description) => {
+      const shapeToBeSnappedTo = config.shape
 
-        expect(shapeToBeSnapedTo.x).toBe(shape.x)
-        expect(shapeToBeSnapedTo.y).toBe(shape.y - shape.getHeight())
+      it(`${shapeToBeSnappedTo} to the ${shape} (${description})`, () => {
+        shapeToBeSnappedTo.snapTo(shape)
+
+        expect(shapeToBeSnappedTo.x).toBe(config.x)
+        expect(shapeToBeSnappedTo.y).toBe(config.y)
       })
     })
   })
