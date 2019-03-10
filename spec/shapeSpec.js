@@ -1,5 +1,6 @@
 import using from 'jasmine-data-provider'
 import Shape from '../src/shape'
+import Point from '../src/point'
 
 describe('Class Shape', () => {
   const shapeX = 5
@@ -14,11 +15,11 @@ describe('Class Shape', () => {
 
   describe('Should return coordinates', () => {
     it('should return x coordinate', () => {
-      expect(shape.getX()).toBe(shapeX)
+      expect(shape.x).toBe(shapeX)
     })
 
     it('should return y coordinate', () => {
-      expect(shape.getY()).toBe(shapeY)
+      expect(shape.y).toBe(shapeY)
     })
 
     it('should return width', () => {
@@ -57,13 +58,13 @@ describe('Class Shape', () => {
 
   describe('Should detect collisions', () => {
     using({
-      'itself': new Shape(shape.getX(), shape.getY(), shapeW, shapeH),
-      'shift right': new Shape(shape.getX() + halfWidth, shape.getY(), shapeW, shapeH),
-      'shift left': new Shape(shape.getX() - halfWidth, shape.getY(), shapeW, shapeH),
-      'transform': new Shape(shape.getX(), shape.getY(), shapeH, shapeW),
-      'transform and shift right': new Shape(shape.getX() + halfWidth, shape.getY(), shapeH, shapeW),
-      'transform and shift up': new Shape(shape.getX(), shape.getY() - halfWidth, shapeH, shapeW),
-      'transform and shift up right': new Shape(shape.getX() + halfWidth, shape.getY() - halfWidth, shapeH, shapeW)
+      'itself': new Shape(shape.x, shape.y, shapeW, shapeH),
+      'shift right': new Shape(shape.x + halfWidth, shape.y, shapeW, shapeH),
+      'shift left': new Shape(shape.x - halfWidth, shape.y, shapeW, shapeH),
+      'transform': new Shape(shape.x, shape.y, shapeH, shapeW),
+      'transform and shift right': new Shape(shape.x + halfWidth, shape.y, shapeH, shapeW),
+      'transform and shift up': new Shape(shape.x, shape.y - halfWidth, shapeH, shapeW),
+      'transform and shift up right': new Shape(shape.x + halfWidth, shape.y - halfWidth, shapeH, shapeW)
     }, (overlapShape, description) => {
       it(`${overlapShape} with the ${shape} (${description})`, () => {
         expect(shape.collidesWith(overlapShape)).toBeTruthy()
@@ -73,12 +74,12 @@ describe('Class Shape', () => {
 
   describe('Should NOT detect collisions', () => {
     using({
-      'move up': new Shape(shape.getX(), shape.getY() - halfWidth, shapeW, shapeH),
-      'move down': new Shape(shape.getX(), shape.getY() + halfWidth, shapeW, shapeH),
-      'move left': new Shape(shape.getX() - shape.getWidth(), shape.getY(), shapeW, shapeH),
-      'move right': new Shape(shape.getX() + shape.getWidth(), shape.getY(), shapeW, shapeH),
-      'transform and move left': new Shape(shape.getX() - halfWidth, shape.getY() - halfWidth, shapeH, shapeW),
-      'transform and move right': new Shape(shape.getX() + shape.getWidth(), shape.getY() - halfWidth, shapeH, shapeW)
+      'move up': new Shape(shape.x, shape.y - halfWidth, shapeW, shapeH),
+      'move down': new Shape(shape.x, shape.y + halfWidth, shapeW, shapeH),
+      'move left': new Shape(shape.x - shape.getWidth(), shape.y, shapeW, shapeH),
+      'move right': new Shape(shape.x + shape.getWidth(), shape.y, shapeW, shapeH),
+      'transform and move left': new Shape(shape.x - halfWidth, shape.y - halfWidth, shapeH, shapeW),
+      'transform and move right': new Shape(shape.x + shape.getWidth(), shape.y - halfWidth, shapeH, shapeW)
     }, (borderShape, description) => {
       it(`${borderShape} with the ${shape} (${description})`, () => {
         expect(shape.collidesWith(borderShape)).toBeFalsy()
@@ -88,14 +89,14 @@ describe('Class Shape', () => {
 
   describe('Should detect border with', () => {
     using({
-      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight(), shapeW, shapeH),
-      'move down': new Shape(shape.getX(), shape.getOffsetY(), shapeW, shapeH),
-      'move left': new Shape(shape.getX() - shape.getWidth(), shape.getY(), shapeW, shapeH),
-      'move right': new Shape(shape.getX() + shape.getWidth(), shape.getY(), shapeW, shapeH),
-      'transform and move up': new Shape(shape.getX(), shape.getY() - shape.getWidth(), shapeH, shapeW),
+      'move up': new Shape(shape.x, shape.y - shape.getHeight(), shapeW, shapeH),
+      'move down': new Shape(shape.x, shape.getOffsetY(), shapeW, shapeH),
+      'move left': new Shape(shape.x - shape.getWidth(), shape.y, shapeW, shapeH),
+      'move right': new Shape(shape.x + shape.getWidth(), shape.y, shapeW, shapeH),
+      'transform and move up': new Shape(shape.x, shape.y - shape.getWidth(), shapeH, shapeW),
       'edge case': new Shape(
-        shape.getX() + shape.getWidth(),
-        shape.getY() - shape.getHeight(),
+        shape.x + shape.getWidth(),
+        shape.y - shape.getHeight(),
         shapeW,
         shapeH
       )
@@ -108,21 +109,21 @@ describe('Class Shape', () => {
 
   describe('Should NOT detect border with', () => {
     using({
-      'itself': new Shape(shape.getX(), shape.getY(), shapeW, shapeH),
-      'shift right': new Shape(shape.getX() + halfWidth, shape.getY(), shapeW, shapeH),
-      'shift left': new Shape(shape.getX() - halfWidth, shape.getY(), shapeW, shapeH),
-      'transform': new Shape(shape.getX(), shape.getY(), shapeH, shapeW),
-      'transform and shift right': new Shape(shape.getX() + halfWidth, shape.getY(), shapeH, shapeW),
-      'transform and shift up': new Shape(shape.getX(), shape.getY() - halfWidth, shapeH, shapeW),
-      'transform and shift up right': new Shape(shape.getX() + halfWidth, shape.getY() - halfWidth, shapeH, shapeW),
-      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH),
-      'move down': new Shape(shape.getX(), shape.getOffsetY() + snapToOffset, shapeW, shapeH),
-      'move left': new Shape(shape.getX() - shape.getWidth() - snapToOffset, shape.getY(), shapeW, shapeH),
-      'move right': new Shape(shape.getX() + shape.getWidth() + snapToOffset, shape.getY(), shapeW, shapeH),
-      'transform and move up': new Shape(shape.getX(), shape.getY() - shape.getWidth() - snapToOffset, shapeH, shapeW),
+      'itself': new Shape(shape.x, shape.y, shapeW, shapeH),
+      'shift right': new Shape(shape.x + halfWidth, shape.y, shapeW, shapeH),
+      'shift left': new Shape(shape.x - halfWidth, shape.y, shapeW, shapeH),
+      'transform': new Shape(shape.x, shape.y, shapeH, shapeW),
+      'transform and shift right': new Shape(shape.x + halfWidth, shape.y, shapeH, shapeW),
+      'transform and shift up': new Shape(shape.x, shape.y - halfWidth, shapeH, shapeW),
+      'transform and shift up right': new Shape(shape.x + halfWidth, shape.y - halfWidth, shapeH, shapeW),
+      'move up': new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset, shapeW, shapeH),
+      'move down': new Shape(shape.x, shape.getOffsetY() + snapToOffset, shapeW, shapeH),
+      'move left': new Shape(shape.x - shape.getWidth() - snapToOffset, shape.y, shapeW, shapeH),
+      'move right': new Shape(shape.x + shape.getWidth() + snapToOffset, shape.y, shapeW, shapeH),
+      'transform and move up': new Shape(shape.x, shape.y - shape.getWidth() - snapToOffset, shapeH, shapeW),
       'edge case': new Shape(
-        shape.getX() + shape.getWidth() + snapToOffset,
-        shape.getY() - shape.getHeight() - snapToOffset,
+        shape.x + shape.getWidth() + snapToOffset,
+        shape.y - shape.getHeight() - snapToOffset,
         shapeW,
         shapeH
       )
@@ -135,14 +136,14 @@ describe('Class Shape', () => {
 
   describe('Should detect allowing snapping', () => {
     using({
-      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH),
-      'move down': new Shape(shape.getX(), shape.getOffsetY() + snapToOffset, shapeW, shapeH),
-      'move left': new Shape(shape.getX() - shape.getWidth() - snapToOffset, shape.getY(), shapeW, shapeH),
-      'move right': new Shape(shape.getX() + shape.getWidth() + snapToOffset, shape.getY(), shapeW, shapeH),
-      'transform and move up': new Shape(shape.getX(), shape.getY() - shape.getWidth() - snapToOffset, shapeH, shapeW),
+      'move up': new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset, shapeW, shapeH),
+      'move down': new Shape(shape.x, shape.getOffsetY() + snapToOffset, shapeW, shapeH),
+      'move left': new Shape(shape.x - shape.getWidth() - snapToOffset, shape.y, shapeW, shapeH),
+      'move right': new Shape(shape.x + shape.getWidth() + snapToOffset, shape.y, shapeW, shapeH),
+      'transform and move up': new Shape(shape.x, shape.y - shape.getWidth() - snapToOffset, shapeH, shapeW),
       'edge case': new Shape(
-        shape.getX() + shape.getWidth() + snapToOffset,
-        shape.getY() - shape.getHeight() - snapToOffset,
+        shape.x + shape.getWidth() + snapToOffset,
+        shape.y - shape.getHeight() - snapToOffset,
         shapeW,
         shapeH
       )
@@ -153,13 +154,13 @@ describe('Class Shape', () => {
     })
   })
 
-  describe('Should NOT detect allowing allow snapping', () => {
+  describe('Should NOT detect allow snapping', () => {
     using({
-      'itself': new Shape(shape.getX(), shape.getY(), shapeW, shapeH),
-      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset - 1, shapeW, shapeH),
-      'move down': new Shape(shape.getX(), shape.getOffsetY() + snapToOffset + 1, shapeW, shapeH),
-      'move left': new Shape(shape.getX() - shape.getWidth() - snapToOffset - 1, shape.getY(), shapeW, shapeH),
-      'move right': new Shape(shape.getOffsetX() + snapToOffset + 1, shape.getY(), shapeW, shapeH)
+      'itself': new Shape(shape.x, shape.y, shapeW, shapeH),
+      'move up': new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset - 1, shapeW, shapeH),
+      'move down': new Shape(shape.x, shape.getOffsetY() + snapToOffset + 1, shapeW, shapeH),
+      'move left': new Shape(shape.x - shape.getWidth() - snapToOffset - 1, shape.y, shapeW, shapeH),
+      'move right': new Shape(shape.getOffsetX() + snapToOffset + 1, shape.y, shapeW, shapeH)
     }, (notSnapToShape, description) => {
       it(`${notSnapToShape} to the ${shape} (${description})`, () => {
         expect(notSnapToShape.isStickableTo(shape, snapToOffset)).toBeFalsy()
@@ -167,16 +168,62 @@ describe('Class Shape', () => {
     })
   })
 
+  it('isStickableTo should catch undefined offset', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, 50, 80, 80)
+
+    expect(() => { shape1.isStickableTo(shape2) }).toThrowError(Error)
+  })
+
+  it('should not snap shapes in collision', () => {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, 50, 80, 80)
+
+    expect(() => { shape1.snapTo(shape2) }).toThrowError(Error)
+  })
+
   describe('Should snap one shape to other', () => {
     using({
-      'move up': new Shape(shape.getX(), shape.getY() - shape.getHeight() - snapToOffset, shapeW, shapeH)
-    }, (shapeToBeSnapedTo, description) => {
-      it(`${shapeToBeSnapedTo} to the ${shape} (${description})`, () => {
-        shapeToBeSnapedTo.snapTo(shape)
+      'move up': {
+        shape: new Shape(shape.x, shape.y - shape.getHeight() - snapToOffset, shapeW, shapeH),
+        x: shape.x,
+        y: shape.y - shape.getHeight()
+      },
+      'move down': {
+        shape: new Shape(shape.x, shape.getOffsetY() + snapToOffset, shapeW, shapeH),
+        x: shape.x,
+        y: shape.getOffsetY()
+      },
+      'move left': {
+        shape: new Shape(shape.x - shape.getWidth() - snapToOffset, shape.y, shapeW, shapeH),
+        x: shape.x - shape.getWidth(),
+        y: shape.y
+      },
+      'move right': {
+        shape: new Shape(shape.x + shape.getWidth() + snapToOffset, shape.y, shapeW, shapeH),
+        x: shape.x + shape.getWidth(),
+        y: shape.y
+      }
+    }, (config, description) => {
+      const shapeToBeSnappedTo = config.shape
 
-        expect(shapeToBeSnapedTo.getX(shape)).toBe(shape.getX())
-        expect(shapeToBeSnapedTo.getY(shape)).toBe(shape.getY() - shape.getHeight())
+      it(`${shapeToBeSnappedTo} to the ${shape} (${description})`, () => {
+        shapeToBeSnappedTo.snapTo(shape)
+
+        expect(shapeToBeSnappedTo.x).toBe(config.x)
+        expect(shapeToBeSnappedTo.y).toBe(config.y)
       })
     })
+  })
+
+  it('contains point', () => {
+    const shape = new Shape(10, 10, 80, 80)
+    const pointOnEdge = new Point(10, 10)
+    const pointIn = new Point(15, 15)
+    const pointOut = new Point(100, 100)
+
+    expect(shape.hasPoint(pointOnEdge)).toBeTruthy()
+    expect(shape.hasPoint(pointIn)).toBeTruthy()
+    expect(shape.hasPoint(pointOut)).toBeFalsy()
   })
 })

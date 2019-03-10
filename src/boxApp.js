@@ -1,6 +1,5 @@
-/**
- * @todo Add internal classes to make private methods
- */
+import Point from './point'
+
 export default class BoxApp {
   constructor (canvasEl, options = {}) {
     this.canvasEl = canvasEl
@@ -9,7 +8,7 @@ export default class BoxApp {
     this.snapToOffset = options.snapToOffset || 0
     this.redraw = true
     this.selectedForDragAndDropShape = null
-    this.selectedForDragAndDropShapeOffset = null
+    this.selectedForDragAndDropShapePoint = null
     this.initialDragAndDropPoint = null
     this.fullViewportMode = false
 
@@ -68,10 +67,10 @@ export default class BoxApp {
         }
 
         // @todo add abstraction
-        this.selectedForDragAndDropShapeOffset = {
-          x: point.x - selectedShape.x,
-          y: point.y - selectedShape.y
-        }
+        this.selectedForDragAndDropShapePoint = new Point(
+          point.x - selectedShape.x,
+          point.y - selectedShape.y
+        )
 
         // @todo replace by behaviour(method)
         this.selectedForDragAndDropShape = selectedShape
@@ -110,8 +109,8 @@ export default class BoxApp {
       const point = this.getMousePos(e)
 
       if (this.selectedForDragAndDropShape !== null) {
-        this.selectedForDragAndDropShape.x = point.x - this.selectedForDragAndDropShapeOffset.x
-        this.selectedForDragAndDropShape.y = point.y - this.selectedForDragAndDropShapeOffset.y
+        this.selectedForDragAndDropShape.x = point.x - this.selectedForDragAndDropShapePoint.x
+        this.selectedForDragAndDropShape.y = point.y - this.selectedForDragAndDropShapePoint.y
 
         this.forceRedraw()
       }
@@ -121,10 +120,10 @@ export default class BoxApp {
       for (let i = 0; i < size; i++) {
         let shape = this.shapes[i]
 
-        const initialPoint = {
-          x: this.selectedForDragAndDropShape.getX(),
-          y: this.selectedForDragAndDropShape.getY()
-        }
+        const initialPoint = new Point(
+          this.selectedForDragAndDropShape.x,
+          this.selectedForDragAndDropShape.y
+        )
 
         if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
           this.selectedForDragAndDropShape.snapTo(shape)
@@ -161,13 +160,14 @@ export default class BoxApp {
     this.redraw = true
   }
 
+  /**
+   * @param e
+   * @return {Point}
+   */
   getMousePos (e) {
     const rect = this.canvasEl.getBoundingClientRect()
 
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    }
+    return new Point(e.clientX - rect.left, e.clientY - rect.top)
   }
 
   /**
@@ -198,14 +198,17 @@ export default class BoxApp {
     this.shapes.forEach((shape) => shape.resetState())
   }
 
-  // @todo probably add static here
+  /**
+   * @param {Point} point
+   * @return {(Shape|null)}
+   */
   getSelectedShape (point) {
     const size = this.shapes.length
 
     for (let i = 0; i < size; i++) {
       let shape = this.shapes[i]
 
-      if (shape.containsPoint(point)) {
+      if (shape.hasPoint(point)) {
         return shape
       }
     }
