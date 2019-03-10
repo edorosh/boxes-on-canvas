@@ -54,7 +54,7 @@
     "karma-cover": "cross-env NODE_ENV=test nyc karma start"
   },
   "author": "Eugene Dorosh",
-  "license": "ISC",
+  "license": "MIT",
   "nyc": {
     "require": [
       "@babel/register"

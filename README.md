@@ -54,11 +54,10 @@ tests is `npm run karma` (`npm run karma-cover` with coverage)
 Once a feature is done make sure the code passes ES Lint. Run `npm run cs-src-fix` or `npm run cs-spec-fix`
 
 ## Todo List
-* add Licence info
+* add Karma to Travis CI
 * enable animation in boxApp
 * increase test coverage
-* enable Travis CI
 * refactor the App in more Event Driven Approach
 * split webpack prod/test config
 * rethink Babel usage
-* remove console.log calls
+* refactor console.log calls
