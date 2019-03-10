@@ -67,8 +67,8 @@ describe('Shape Interactions', function(){
       .add(shape2)
       .run()
 
-    expect(shape1.fill).toBe(Shape.collideFillColor)
-    expect(shape2.fill).toBe(Shape.collideFillColor)
+    expect(shape1.fill).toBe(BoxApp.collideColor)
+    expect(shape2.fill).toBe(BoxApp.collideColor)
   })
 
   it('should not be in collision if borders', () => {
@@ -202,8 +202,8 @@ describe('Shape Interactions', function(){
 
     boxApp.run()
 
-    expect(shape1.fill).toBe(Shape.collideFillColor)
-    expect(shape2.fill).toBe(Shape.collideFillColor)
+    expect(shape1.fill).toBe(BoxApp.collideColor)
+    expect(shape2.fill).toBe(BoxApp.collideColor)
   })
 
   it('should process collisions on object move and get back to initial position', () => {
