@@ -79,7 +79,7 @@ export default class BoxApp {
         this.selectedForDragAndDropShape = selectedShape
       }
 
-      console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
+      // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
     })
 
     this.canvasEl.addEventListener('mouseup', e => {
@@ -94,7 +94,7 @@ export default class BoxApp {
           const by = this.selectedForDragAndDropShape.x - this.initialDragAndDropPoint.x
           const c = this.initialDragAndDropPoint.x * this.selectedForDragAndDropShape.y - this.selectedForDragAndDropShape.x * this.initialDragAndDropPoint.y
 
-          console.log(ax, by, c)
+          // console.log(ax, by, c)
 
           if (this.useAnimation) {
             this.animation.push(
@@ -168,7 +168,7 @@ export default class BoxApp {
         this.forceRedraw()
       }
 
-      console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
+      // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
 
       const size = this.shapes.length
 
@@ -312,7 +312,7 @@ export default class BoxApp {
     this.handleAnimation()
 
     if (this.redraw !== false) {
-      console.log('run')
+      // console.log('run')
       this.update()
       this.draw()
     }
@@ -321,7 +321,7 @@ export default class BoxApp {
   }
 
   draw () {
-    console.log('redraw frame')
+    // console.log('redraw frame')
 
     this.clear()
 
