@@ -316,8 +316,8 @@ describe('Shape Interactions', function(){
 
   it('should snap draggable Shape to other Shape with no collisions', function() {
     const shape1 = new Shape(10, 20, 80, 80)
-    const shape2 = new Shape(shape1.getOffsetX(), shape1.getY() - 10, 80, 80)
-    const shape3 = new Shape(10, shape1.getOffsetY(), 80, 80)
+    const shape2 = new Shape(shape1.getOffsetX(), shape1.getY() - snapToOffset / 2, 80, 80)
+    const shape3 = new Shape(10, shape1.getOffsetY() + snapToOffset / 2, 80, 80)
 
     boxApp
       .add(shape1)
@@ -337,7 +337,7 @@ describe('Shape Interactions', function(){
       'bubbles': true,
       'cancelable': true,
       clientX: 12 + canvasRect.left,
-      clientY: shape3.getY() + 1 + canvasRect.top
+      clientY: shape3.getY() - 1 + canvasRect.top
     })
 
     canvasEl.dispatchEvent(eventDown)
@@ -346,5 +346,6 @@ describe('Shape Interactions', function(){
     boxApp.run()
 
     expect(shape1.collidesWith(shape3)).toBeFalsy()
+    expect(shape1.bordersWith(shape3)).toBeTruthy()
   })
 })

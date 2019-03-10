@@ -159,6 +159,7 @@ export default class BoxApp {
         return
       }
 
+      const size = this.shapes.length
       const point = this.getMousePos(e)
 
       if (this.selectedForDragAndDropShape !== null) {
@@ -170,12 +171,26 @@ export default class BoxApp {
 
       // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
 
-      const size = this.shapes.length
-
+      // @todo disable snap to during animation
       for (let i = 0; i < size; i++) {
         let shape = this.shapes[i]
+
+        const initialPoint = {
+          x: this.selectedForDragAndDropShape.getX(),
+          y: this.selectedForDragAndDropShape.getY()
+        }
+
         if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
           this.selectedForDragAndDropShape.snapTo(shape)
+
+          // get back if has collisions
+          if (this.findCollisionsWith(this.selectedForDragAndDropShape)) {
+            this.selectedForDragAndDropShape.x = initialPoint.x
+            this.selectedForDragAndDropShape.y = initialPoint.y
+          } else {
+            this.forceRedraw()
+            // @todo end up the loop if first found
+          }
         }
       }
     })
@@ -228,7 +243,6 @@ export default class BoxApp {
    */
   update () {
     this.clearShapeState()
-    this.handleSnapTos()
     this.handleCollisions()
 
     return this
@@ -268,21 +282,27 @@ export default class BoxApp {
   }
 
   /**
-   * @todo disable snap to during animation
+   * @tod add unit test
+   * @param {Shape} shape
+   * @return {boolean}
    */
-  handleSnapTos () {
-    if (this.selectedForDragAndDropShape === null) {
-      return
-    }
+  findCollisionsWith(shape) {
+    const size = this.shapes.length
 
-    for (let i = 0; i < this.shapes.length; i++) {
-      let shape = this.shapes[i]
+    for (let i = 0; i < size; i++) {
+      let otherShape = this.shapes[i]
 
-      // @todo add collision check
-      if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
-        this.selectedForDragAndDropShape.snapTo(shape)
+      // @refactor by explicit method
+      if (Object.is(otherShape, shape)) {
+        continue
+      }
+
+      if (otherShape.collidesWith(shape)) {
+        return true;
       }
     }
+
+    return false;
   }
 
   handleCollisions () {
