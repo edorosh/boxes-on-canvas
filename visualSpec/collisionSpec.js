@@ -1,6 +1,6 @@
 describe('Shape Interactions', function(){
 
-  let boxApp, canvasEl, canvasCounter = 1, snapToOffset = 20;
+  let boxApp, canvasEl, canvasCounter = 1, snapToOffset = 20, canvasRect;
 
   beforeAll(function() {
     document.body.insertAdjacentHTML(
@@ -26,7 +26,7 @@ describe('Shape Interactions', function(){
       'snapToOffset': snapToOffset,
       'useAnimation': false
     })
-
+    canvasRect = canvasEl.getBoundingClientRect()
   });
 
   afterEach(function() {
@@ -108,22 +108,20 @@ describe('Shape Interactions', function(){
       .add(shape2)
       .run()
 
-    const rect = canvasEl.getBoundingClientRect()
-
     const eventDown = new MouseEvent('mousedown', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top
     })
 
     const eventUp = new MouseEvent('mouseup', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top
     })
 
     canvasEl.dispatchEvent(eventDown)
@@ -182,22 +180,20 @@ describe('Shape Interactions', function(){
       .add(shape2)
       .run()
 
-    const rect = canvasEl.getBoundingClientRect()
-
     const eventDown = new MouseEvent('mousedown', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top
     })
 
     const eventMove = new MouseEvent('mousemove', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top + shape1.getHeight()
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top + shape1.getHeight()
     })
 
     canvasEl.dispatchEvent(eventDown)
@@ -230,28 +226,26 @@ describe('Shape Interactions', function(){
       .add(shape2)
       .run()
 
-    const rect = canvasEl.getBoundingClientRect()
-
     const eventDown = new MouseEvent('mousedown', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top
     })
     const eventMove = new MouseEvent('mousemove', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top + shape1.getHeight()
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top + shape1.getHeight()
     })
     const eventUp = new MouseEvent('mouseup', {
       'view': window,
       'bubbles': true,
       'cancelable': true,
-      clientX: 52 + rect.left,
-      clientY: 52 + rect.top + shape1.getHeight()
+      clientX: 52 + canvasRect.left,
+      clientY: 52 + canvasRect.top + shape1.getHeight()
     })
 
     canvasEl.dispatchEvent(eventDown)
@@ -287,30 +281,37 @@ describe('Shape Interactions', function(){
     expectShapeGotBackToInitialPosition(done)
   })
 
-  xit('should snap draggable Shape to other Shape', function() {
-    const shape1 = new Shape(100, 10, 80, 80)
-    const shape2 = new Shape(100, 100, 80, 80)
-    const shape3 = new Shape(100, 190, 80, 80)
-    const shape4 = new Shape(10, 100, 80, 80)
-
-    const shape5 = new Shape(190, 10, 80, 80)
-    const shape6 = new Shape(190, 100, 80, 80)
+  it('should snap draggable Shape to other Shape', function() {
+    const shape1 = new Shape(10, 10, 80, 80)
+    const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 5, 80, 80)
 
     boxApp
       .add(shape1)
       .add(shape2)
-      .add(shape3)
-      .add(shape4)
-      .add(shape5)
-      .add(shape6)
       .run()
 
-    expect(shape1.bordersWith(shape2)).toBeTruthy()
-    expect(shape2.bordersWith(shape3)).toBeTruthy()
-    expect(shape4.bordersWith(shape2)).toBeTruthy()
+    const eventDown = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 15 + canvasRect.left,
+      clientY: shape2.getY() + 1 + canvasRect.top
+    })
+    const eventMove = new MouseEvent('mousemove', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 15 + canvasRect.left,
+      clientY: shape2.getY() - 5 + canvasRect.top
+    })
 
-    expect(shape5.bordersWith(shape6)).toBeTruthy()
-    expect(shape2.bordersWith(shape5)).toBeTruthy()
+    canvasEl.dispatchEvent(eventDown)
+    boxApp.run()
+    canvasEl.dispatchEvent(eventMove)
+    boxApp.run()
+
+    expect(shape1.bordersWith(shape2)).toBeTruthy()
+    expect(shape1.collidesWith(shape2)).toBeFalsy()
   })
 
   xit('should snap draggable Shape to other Shape with no collisions', function() {
