@@ -26,7 +26,6 @@ jobs:
     - stage: Build
       script: 'npm run build'
     - stage: Unit Tests
-      script: npm run test-ci
-
-after_script:
-  - "cat ./dist/reports/coverage/lcov.info | ./node_modules/.bin/coveralls"
+      script: 'npm run test-ci'
+      after_script:
+        - "cat ./dist/reports/coverage/lcov.info | ./node_modules/.bin/coveralls"
