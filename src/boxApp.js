@@ -286,7 +286,7 @@ export default class BoxApp {
    * @param {Shape} shape
    * @return {boolean}
    */
-  findCollisionsWith(shape) {
+  findCollisionsWith (shape) {
     const size = this.shapes.length
 
     for (let i = 0; i < size; i++) {
@@ -298,11 +298,11 @@ export default class BoxApp {
       }
 
       if (otherShape.collidesWith(shape)) {
-        return true;
+        return true
       }
     }
 
-    return false;
+    return false
   }
 
   handleCollisions () {
