@@ -41,7 +41,7 @@
   },
   "scripts": {
     "test": "jasmine --reporter=jasmine-console-reporter",
-    "test-cover": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text jasmine",
+    "test-cover": "cross-env NODE_ENV=test nyc jasmine",
     "cs-src-fix": "eslint --fix src/",
     "cs-spec-fix": "eslint --fix spec/",
     "cs-all-fix": "eslint --fix src/ spec/",
@@ -55,6 +55,13 @@
   "author": "Eugene Dorosh",
   "license": "ISC",
   "nyc": {
+    "require": [
+      "@babel/register"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
     "sourceMap": false,
     "instrument": false
   }

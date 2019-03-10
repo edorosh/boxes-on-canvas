@@ -15,8 +15,7 @@
           {
             "exclude": [
               "**/*Spec.js"
-            ],
-            "useInlineSourceMaps": false
+            ]
           }
         ]
       ]
