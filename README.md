@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/edorosh/boxes-on-canvas.svg?branch=master)](https://travis-ci.org/edorosh/boxes-on-canvas)
+[![Coverage Status](https://coveralls.io/repos/github/edorosh/boxes-on-canvas/badge.svg?branch=master)](https://coveralls.io/github/edorosh/boxes-on-canvas?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/edorosh/boxes-on-canvas)
 
 # Boxes on Canvas (2D)
