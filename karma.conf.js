@@ -69,10 +69,10 @@ module.exports = function(config) {
     concurrency: Infinity,
 
     coverageReporter: {
-      dir: 'dist/reports/coverage',
+      dir: 'dist/reports/visualCoverage',
       reporters: [
-        { type: 'html', subdir: 'report-html' },
-        { type: 'lcov', subdir: 'report-lcov' },
+        { type: 'html', subdir: 'html' },
+        { type: 'lcov', subdir: 'lcov' }
       ]
     }
   })

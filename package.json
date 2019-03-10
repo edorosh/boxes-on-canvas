@@ -50,7 +50,7 @@
     "watch": "webpack --mode development --watch",
     "start": "webpack-dev-server --mode development --open",
     "karma": "karma start",
-    "karma-cover": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text karma start"
+    "karma-cover": "cross-env NODE_ENV=test nyc karma start"
   },
   "author": "Eugene Dorosh",
   "license": "ISC",
@@ -62,6 +62,7 @@
       "lcov",
       "text"
     ],
+    "report-dir": "./dist/reports/coverage",
     "sourceMap": false,
     "instrument": false
   }
