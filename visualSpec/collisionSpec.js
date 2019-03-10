@@ -314,6 +314,37 @@ describe('Shape Interactions', function(){
     expect(shape1.collidesWith(shape2)).toBeFalsy()
   })
 
-  xit('should snap draggable Shape to other Shape with no collisions', function() {
+  it('should snap draggable Shape to other Shape with no collisions', function() {
+    const shape1 = new Shape(10, 20, 80, 80)
+    const shape2 = new Shape(shape1.getOffsetX(), shape1.getY() - 10, 80, 80)
+    const shape3 = new Shape(10, shape1.getOffsetY(), 80, 80)
+
+    boxApp
+      .add(shape1)
+      .add(shape2)
+      .add(shape3)
+      .run()
+
+    const eventDown = new MouseEvent('mousedown', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 11 + canvasRect.left,
+      clientY: shape3.getY() + 1 + canvasRect.top
+    })
+    const eventMove = new MouseEvent('mousemove', {
+      'view': window,
+      'bubbles': true,
+      'cancelable': true,
+      clientX: 12 + canvasRect.left,
+      clientY: shape3.getY() + 1 + canvasRect.top
+    })
+
+    canvasEl.dispatchEvent(eventDown)
+    boxApp.run()
+    canvasEl.dispatchEvent(eventMove)
+    boxApp.run()
+
+    expect(shape1.collidesWith(shape3)).toBeFalsy()
   })
 })
