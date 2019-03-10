@@ -23,8 +23,7 @@ describe('Shape Interactions', function(){
 
     canvasEl = document.querySelector('#' + this.canvasSelector)
     boxApp = new BoxApp(canvasEl, {
-      'snapToOffset': snapToOffset,
-      'useAnimation': false
+      'snapToOffset': snapToOffset
     })
     canvasRect = canvasEl.getBoundingClientRect()
   });
@@ -207,7 +206,7 @@ describe('Shape Interactions', function(){
     expect(shape2.fill).toBe(Shape.collideFillColor)
   })
 
-  it('should process collisions on object move and get back to initial position', (done) => {
+  it('should process collisions on object move and get back to initial position', () => {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
 
@@ -255,30 +254,15 @@ describe('Shape Interactions', function(){
     canvasEl.dispatchEvent(eventUp)
     boxApp.run()
 
-    const expectShapeGotBackToInitialPosition = function (done) {
-      // wait for animation to finish
-      if (boxApp.animation.length > 0) {
-        setTimeout(() => {
-          expectShapeGotBackToInitialPosition(done)
-        }, 100)
+    expect(shape1.fill).toBe(Shape.defaultFillColor)
+    expect(shape2.fill).toBe(Shape.defaultFillColor)
 
-        return
-      }
+    expect(shape1.x).toBe(initialPoint1.x)
+    expect(shape1.y).toBe(initialPoint1.y)
 
-      expect(shape1.fill).toBe(Shape.defaultFillColor)
-      expect(shape2.fill).toBe(Shape.defaultFillColor)
-
-      expect(shape1.x).toBe(initialPoint1.x)
-      expect(shape1.y).toBe(initialPoint1.y)
-
-      // Bug with wrong snapping on animation
-      expect(shape2.x).toBe(initialPoint2.x)
-      expect(shape2.y).toBe(initialPoint2.y)
-
-      done()
-    }
-
-    expectShapeGotBackToInitialPosition(done)
+    // Bug with wrong snapping on animation
+    expect(shape2.x).toBe(initialPoint2.x)
+    expect(shape2.y).toBe(initialPoint2.y)
   })
 
   it('should snap draggable Shape to other Shape', function() {

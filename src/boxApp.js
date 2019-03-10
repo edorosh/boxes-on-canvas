@@ -12,8 +12,6 @@ export default class BoxApp {
     this.selectedForDragAndDropShapeOffset = null
     this.initialDragAndDropPoint = null
     this.fullViewportMode = false
-    this.animation = []
-    this.useAnimation = options.useAnimation || false
 
     this.setUpEvents()
   }
@@ -89,60 +87,9 @@ export default class BoxApp {
           const shape = this.selectedForDragAndDropShape
           const initialPoint = this.initialDragAndDropPoint
 
-          // get line
-          const ax = this.initialDragAndDropPoint.y - this.selectedForDragAndDropShape.y
-          const by = this.selectedForDragAndDropShape.x - this.initialDragAndDropPoint.x
-          const c = this.initialDragAndDropPoint.x * this.selectedForDragAndDropShape.y - this.selectedForDragAndDropShape.x * this.initialDragAndDropPoint.y
-
-          // console.log(ax, by, c)
-
-          if (this.useAnimation) {
-            this.animation.push(
-              (function * () {
-                while (shape.x !== initialPoint.x || shape.y !== initialPoint.y) {
-                  const step = 3
-
-                  // @todo refactor this
-                  // move X
-                  if (shape.y === initialPoint.y) {
-                    if (shape.x < initialPoint.x) {
-                      shape.x += step
-                      shape.x = (shape.x > initialPoint.x && initialPoint.x) || shape.x
-                    } else {
-                      shape.x -= step
-                      shape.x = (shape.x < initialPoint.x && initialPoint.x) || shape.x
-                    }
-                  } else if (shape.x === initialPoint.x) {
-                    // move Y
-                    if (shape.y < initialPoint.y) {
-                      shape.y += step
-                      shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
-                    } else {
-                      shape.y -= step
-                      shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
-                    }
-                  } else {
-                    // move both
-                    if (shape.y < initialPoint.y) {
-                      shape.y += step
-                      shape.y = (shape.y > initialPoint.y && initialPoint.y) || shape.y
-                    } else {
-                      shape.y -= step
-                      shape.y = (shape.y < initialPoint.y && initialPoint.y) || shape.y
-                    }
-                    shape.x = (-c - by * shape.y) / ax
-                  }
-
-                  self.forceRedraw()
-                  yield
-                }
-              })()
-            )
-          } else {
-            shape.x = initialPoint.x
-            shape.y = initialPoint.y
-            self.forceRedraw()
-          }
+          shape.x = initialPoint.x
+          shape.y = initialPoint.y
+          self.forceRedraw()
         }
       }
 
@@ -171,7 +118,6 @@ export default class BoxApp {
 
       // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
 
-      // @todo disable snap to during animation
       for (let i = 0; i < size; i++) {
         let shape = this.shapes[i]
 
@@ -267,20 +213,6 @@ export default class BoxApp {
     return null
   }
 
-  handleAnimation () {
-    if (!this.animation.length) {
-      return
-    }
-
-    this.animation.forEach(function (animation, index, object) {
-      let next = animation.next()
-
-      if (next.done) {
-        object.splice(index, 1)
-      }
-    })
-  }
-
   /**
    * @tod add unit test
    * @param {Shape} shape
@@ -328,8 +260,6 @@ export default class BoxApp {
 
   run () {
     window.requestAnimationFrame(this.run.bind(this))
-
-    this.handleAnimation()
 
     if (this.redraw !== false) {
       // console.log('run')
