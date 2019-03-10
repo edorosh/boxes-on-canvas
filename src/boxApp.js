@@ -1,4 +1,5 @@
 import Point from './point'
+import Shape from './shape'
 
 export default class BoxApp {
   constructor (canvasEl, options = {}) {
@@ -13,6 +14,24 @@ export default class BoxApp {
     this.fullViewportMode = false
 
     this.setUpEvents()
+  }
+
+  static get collideColor () {
+    return 'rgba(255,0,0,.6)'
+  }
+
+  static get selectedColor () {
+    return '#008000'
+  }
+
+  /**
+   * @todo test this more
+   * @param {Shape} shape
+   *
+   * @return {boolean}
+   */
+  static isInCollisionState (shape) {
+    return shape.fill === BoxApp.collideColor
   }
 
   get canvasHeight () {
@@ -81,7 +100,7 @@ export default class BoxApp {
 
     this.canvasEl.addEventListener('mouseup', e => {
       if (this.selectedForDragAndDropShape !== null && this.initialDragAndDropPoint !== null) {
-        if (this.selectedForDragAndDropShape.isInCollisionState()) {
+        if (BoxApp.isInCollisionState(this.selectedForDragAndDropShape)) {
           const self = this
           const shape = this.selectedForDragAndDropShape
           const initialPoint = this.initialDragAndDropPoint
@@ -147,7 +166,7 @@ export default class BoxApp {
 
       // @todo fire event
       if (selectedShape !== null) {
-        selectedShape.setSelectedState()
+        selectedShape.fill = BoxApp.selectedColor
       }
 
       this.forceRedraw()
@@ -194,8 +213,15 @@ export default class BoxApp {
     return this
   }
 
+  /**
+   * @param {Shape} shape
+   */
+  static resetShapeState (shape) {
+    shape.fill = Shape.defaultFillColor
+  }
+
   clearShapeState () {
-    this.shapes.forEach((shape) => shape.resetState())
+    this.shapes.forEach((shape) => BoxApp.resetShapeState(shape))
   }
 
   /**
@@ -250,8 +276,8 @@ export default class BoxApp {
         let shapeB = this.shapes[j]
 
         if (shapeA.collidesWith(shapeB)) {
-          shapeB.setInCollisionState()
-          shapeA.setInCollisionState()
+          shapeB.fill = BoxApp.collideColor
+          shapeA.fill = BoxApp.collideColor
         }
       }
     }

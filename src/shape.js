@@ -5,16 +5,8 @@ export default class Shape {
     return '#AAAAAA'
   }
 
-  static get collideFillColor () {
-    return 'rgba(255,0,0,.6)'
-  }
-
-  static get strokeColor () {
+  static get defaultStrokeColor () {
     return '#000000'
-  }
-
-  static get selectedColor () {
-    return '#008000'
   }
 
   /**
@@ -28,6 +20,7 @@ export default class Shape {
     this.width = width
     this.height = height
     this.fill = Shape.defaultFillColor
+    this.strokeStyle = Shape.defaultStrokeColor
     this.borderWidth = 1
   }
 
@@ -92,37 +85,6 @@ export default class Shape {
   }
 
   /**
-   * @todo test this more
-   */
-  setInCollisionState () {
-    this.fill = Shape.collideFillColor
-  }
-
-  /**
-   * @todo test this more
-   * @return {boolean}
-   */
-  isInCollisionState () {
-    return this.fill === Shape.collideFillColor
-  }
-
-  /**
-   * @todo test this more
-   */
-  setSelectedState () {
-    this.fill = Shape.selectedColor
-  }
-
-  /**
-   * @todo test this more
-   */
-  resetState () {
-    this.fill = Shape.defaultFillColor
-  }
-
-  /**
-   * @todo test this more
-   *
    * @param ctx
    */
   draw (ctx) {
@@ -131,7 +93,7 @@ export default class Shape {
     ctx.fillStyle = this.fill
     ctx.fillRect(this.x, this.y, this.width, this.height)
 
-    ctx.strokeStyle = Shape.strokeColor
+    ctx.strokeStyle = this.strokeStyle
     ctx.lineWidth = this.borderWidth
     ctx.strokeRect(this.x, this.y, this.width, this.height)
 
