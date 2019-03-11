@@ -7,9 +7,7 @@ export default class BoxApp {
     this.canvasEl = canvasEl
     this.ctx = canvasEl.getContext('2d')
     this.snapToOffset = options.snapToOffset || 0
-    this.selectedForDragAndDropShape = null
-    this.selectedForDragAndDropShapePoint = null
-    this.initialDragAndDropPoint = null
+    this.initialDragAndDropShapePoint = null
     this.fullViewportMode = false
 
     options.updateCallback = this.update.bind(this)
@@ -23,10 +21,6 @@ export default class BoxApp {
     return 'rgba(255,0,0,.6)'
   }
 
-  static get selectedColor () {
-    return '#008000'
-  }
-
   /**
    * @todo test this more
    * @param {Shape} shape
@@ -37,7 +31,7 @@ export default class BoxApp {
     return shape.fill === BoxApp.collideColor
   }
 
-  get shapes() {
+  get shapes () {
     return this.canvasEngine.getShapes()
   }
 
@@ -73,63 +67,64 @@ export default class BoxApp {
   setUpEvents () {
     window.onresize = this.setUpFullViewportMode.bind(this)
 
-    this.canvasEl.addEventListener('canvas:shape-select', e => {
+    this.canvasEl.addEventListener('canvas:shape-move-start', e => {
       const selectedShape = e.detail.shape
-      this.initialDragAndDropPoint = e.detail.initialPoint
-      this.selectedForDragAndDropShapePoint = e.detail.selectedPoint
 
-      selectedShape.fill = BoxApp.selectedColor
-
-      this.forceRedraw()
+      if (selectedShape !== null) {
+        this.initialDragAndDropShapePoint = {
+          x: selectedShape.x,
+          y: selectedShape.y
+        }
+      }
     })
 
-    // this.canvasEl.addEventListener('canvas:shape-move-stop', e => {
-    //   if (this.selectedForDragAndDropShape !== null && this.initialDragAndDropPoint !== null) {
-    //     if (BoxApp.isInCollisionState(this.selectedForDragAndDropShape)) {
-    //       const self = this
-    //       const shape = this.selectedForDragAndDropShape
-    //       const initialPoint = this.initialDragAndDropPoint
-    //
-    //       shape.x = initialPoint.x
-    //       shape.y = initialPoint.y
-    //       self.forceRedraw()
-    //     }
-    //   }
-    // })
-    //
+    this.canvasEl.addEventListener('canvas:shape-move-stop', e => {
+      const selectedForDragAndDropShape = e.detail.shape
+
+      if (selectedForDragAndDropShape !== null && this.initialDragAndDropShapePoint !== null) {
+        if (BoxApp.isInCollisionState(selectedForDragAndDropShape)) {
+          const initialPoint = this.initialDragAndDropShapePoint
+
+          selectedForDragAndDropShape.x = initialPoint.x
+          selectedForDragAndDropShape.y = initialPoint.y
+          this.forceRedraw()
+        }
+      }
+
+      this.initialDragAndDropShapePoint = null
+    })
+
     this.canvasEl.addEventListener('canvas:shape-move', e => {
-      if (!this.selectedForDragAndDropShape) {
+      const selectedForDragAndDropShape = e.detail.shape
+      const selectedForDragAndDropShapePoint = e.detail.selectedPoint
+
+      if (!selectedForDragAndDropShape) {
         return
       }
 
       const size = this.shapes.length
       const point = e.detail.point
 
-      if (this.selectedForDragAndDropShape !== null) {
-        this.selectedForDragAndDropShape.x = point.x - this.selectedForDragAndDropShapePoint.x
-        this.selectedForDragAndDropShape.y = point.y - this.selectedForDragAndDropShapePoint.y
+      selectedForDragAndDropShape.x = point.x - selectedForDragAndDropShapePoint.x
+      selectedForDragAndDropShape.y = point.y - selectedForDragAndDropShapePoint.y
 
-        this.forceRedraw()
-      }
+      this.forceRedraw()
 
       for (let i = 0; i < size; i++) {
         let shape = this.shapes[i]
 
         const initialPoint = new Point(
-          this.selectedForDragAndDropShape.x,
-          this.selectedForDragAndDropShape.y
+          selectedForDragAndDropShape.x,
+          selectedForDragAndDropShape.y
         )
 
-        if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
-          this.selectedForDragAndDropShape.snapTo(shape)
+        if (selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
+          selectedForDragAndDropShape.snapTo(shape)
 
           // get back if has collisions
-          if (this.findCollisionsWith(this.selectedForDragAndDropShape)) {
-            this.selectedForDragAndDropShape.x = initialPoint.x
-            this.selectedForDragAndDropShape.y = initialPoint.y
-          } else {
-            this.forceRedraw()
-            // @todo end up the loop if first found
+          if (this.findCollisionsWith(selectedForDragAndDropShape)) {
+            selectedForDragAndDropShape.x = initialPoint.x
+            selectedForDragAndDropShape.y = initialPoint.y
           }
         }
       }
@@ -159,7 +154,7 @@ export default class BoxApp {
    * @returns {this}
    */
   update () {
-    // this.clearShapeState()
+    this.clearShapeState()
     this.handleCollisions()
 
     return this
@@ -217,7 +212,7 @@ export default class BoxApp {
     }
   }
 
-  draw () {
-    this.canvasEngine.draw()
+  run () {
+    this.canvasEngine.run()
   }
 }

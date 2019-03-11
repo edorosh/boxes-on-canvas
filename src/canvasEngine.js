@@ -31,8 +31,8 @@ export default class CanvasEngine {
 
         this.canvasEl.dispatchEvent(
           new CustomEvent('canvas:shape-move-start', { detail: {
-            'shape': this.selectedForDragAndDropShape,
             'point': this.getMousePos(e),
+            'shape': this.selectedForDragAndDropShape,
             'selectedPoint': this.selectedForDragAndDropShapePoint
           } })
         )
@@ -40,14 +40,16 @@ export default class CanvasEngine {
     })
 
     this.canvasEl.addEventListener('mouseup', e => {
-      this.selectedForDragAndDropShape = null
-      this.selectedForDragAndDropShapePoint = null
-
       this.canvasEl.dispatchEvent(
         new CustomEvent('canvas:shape-move-stop', { detail: {
-          'point': this.getMousePos(e)
+          'point': this.getMousePos(e),
+          'shape': this.selectedForDragAndDropShape,
+          'selectedPoint': this.selectedForDragAndDropShapePoint
         } })
       )
+
+      this.selectedForDragAndDropShape = null
+      this.selectedForDragAndDropShapePoint = null
     })
 
     this.canvasEl.addEventListener('mousemove', e => {
@@ -57,31 +59,32 @@ export default class CanvasEngine {
 
       this.canvasEl.dispatchEvent(
         new CustomEvent('canvas:shape-move', { detail: {
+          'point': this.getMousePos(e),
           'shape': this.selectedForDragAndDropShape,
-          'point': this.getMousePos(e)
+          'selectedPoint': this.selectedForDragAndDropShapePoint
         } })
       )
     })
 
-    this.canvasEl.addEventListener('click', (e) => {
-      const point = this.getMousePos(e)
-      const selectedShape = this.getSelectedShape(point)
-
-      if (selectedShape !== null) {
-        this.canvasEl.dispatchEvent(
-          new CustomEvent('canvas:shape-select', { detail: {
-            'shape': selectedShape,
-            'point': this.getMousePos(e)
-          } })
-        )
-      }
-
-      this.canvasEl.dispatchEvent(
-        new CustomEvent('canvas:click', { detail: {
-          'point': this.getMousePos(e)
-        } })
-      )
-    })
+    // this.canvasEl.addEventListener('click', (e) => {
+    //   const point = this.getMousePos(e)
+    //   const selectedShape = this.getSelectedShape(point)
+    //
+    //   if (selectedShape !== null) {
+    //     this.canvasEl.dispatchEvent(
+    //       new CustomEvent('canvas:shape-select', { detail: {
+    //         'shape': selectedShape,
+    //         'point': this.getMousePos(e)
+    //       } })
+    //     )
+    //   }
+    //
+    //   this.canvasEl.dispatchEvent(
+    //     new CustomEvent('canvas:click', { detail: {
+    //       'point': this.getMousePos(e)
+    //     } })
+    //   )
+    // })
 
     return this
   }
