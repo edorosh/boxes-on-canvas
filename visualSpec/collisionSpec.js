@@ -1,8 +1,7 @@
-describe('Shape Interactions', function(){
+describe('Shape Interactions', function () {
+  let boxApp; let canvasEl; let canvasCounter = 1; let snapToOffset = 20; let canvasRect
 
-  let boxApp, canvasEl, canvasCounter = 1, snapToOffset = 20, canvasRect;
-
-  beforeAll(function() {
+  beforeAll(function () {
     document.body.insertAdjacentHTML(
       'beforeend',
       '<p>Canvas samples</p>')
@@ -10,43 +9,42 @@ describe('Shape Interactions', function(){
     // @todo add css fixtures
   })
 
-  beforeEach(function() {
+  beforeEach(function () {
     this.canvasSelector = `canvas-${canvasCounter}`
 
     var fixture = `<canvas id="${this.canvasSelector}" width="300" height="280"> 
     This text is displayed if your browser does not support HTML5 Canvas. 
-    </canvas>`;
+    </canvas>`
 
     document.body.insertAdjacentHTML(
       'beforeend',
-      fixture);
+      fixture)
 
     canvasEl = document.querySelector('#' + this.canvasSelector)
     boxApp = new BoxApp(canvasEl, {
       'snapToOffset': snapToOffset
     })
     canvasRect = canvasEl.getBoundingClientRect()
-  });
+  })
 
-  afterEach(function() {
+  afterEach(function () {
     // document.body.removeChild(document.getElementById(`${this.canvasSelector}`));
-    canvasCounter++;
-  });
+    canvasCounter++
+  })
 
-  it('should calculate view port mode', function() {
+  it('should calculate view port mode', function () {
     const { width, height } = BoxApp.getViewportDimensionsForElement(canvasEl)
 
-    const offsetTop  = canvasEl.offsetTop * 2
-    const offsetWidth  = canvasEl.offsetLeft * 2
+    const offsetTop = canvasEl.offsetTop * 2
+    const offsetWidth = canvasEl.offsetLeft * 2
 
     expect(width).toBe(window.innerWidth - offsetWidth)
     expect(height).toBe(window.innerHeight - offsetTop)
   })
 
-  it('should enter view port mode', function() {
-
-    const width = 120;
-    const height = 100;
+  it('should enter view port mode', function () {
+    const width = 120
+    const height = 100
 
     spyOn(BoxApp, 'getViewportDimensionsForElement').and.returnValue({ width, height })
 
@@ -58,7 +56,7 @@ describe('Shape Interactions', function(){
     expect(canvasEl.height).toBe(height)
   })
 
-  it('should be in collision', function() {
+  it('should be in collision', function () {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(69, 30, 80, 80)
 
@@ -86,7 +84,7 @@ describe('Shape Interactions', function(){
     expect(shape2.bordersWith(shape1)).toBeTruthy()
   })
 
-  it('should not snap to', function() {
+  it('should not snap to', function () {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
 
@@ -265,7 +263,7 @@ describe('Shape Interactions', function(){
     expect(shape2.y).toBe(initialPoint2.y)
   })
 
-  it('should snap draggable Shape to other Shape', function() {
+  it('should snap draggable Shape to other Shape', function () {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 5, 80, 80)
 
@@ -298,7 +296,7 @@ describe('Shape Interactions', function(){
     expect(shape1.collidesWith(shape2)).toBeFalsy()
   })
 
-  it('should snap draggable Shape to other Shape with no collisions', function() {
+  it('should snap draggable Shape to other Shape with no collisions', function () {
     const shape1 = new Shape(10, 20, 80, 80)
     const shape2 = new Shape(shape1.getOffsetX(), shape1.y - snapToOffset / 2, 80, 80)
     const shape3 = new Shape(10, shape1.getOffsetY() + snapToOffset / 2, 80, 80)

@@ -59,10 +59,12 @@ tests is `npm run karma`. Open `visualSpec/index.html` to run visual tests.
 Once a feature is done make sure the code passes ES Lint. Run `npm run cs-fix-src` or `npm run cs-fix-spec`
 
 ## Todo List
+* release version 1
 * add Karma to Travis CI
 * enable animation in boxApp
-* increase test coverage
 * refactor the App in more Event Driven Approach
 * split webpack prod/test config
 * rethink Babel usage
 * refactor console.log calls
+* add demos on github pages
+* add generated docuementation
