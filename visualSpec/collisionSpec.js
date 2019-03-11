@@ -126,13 +126,13 @@ describe('Shape Interactions', function () {
 
     boxApp.run()
 
-    expect(boxApp.selectedForDragAndDropShape).toBe(shape1)
+    expect(boxApp.draggableShape).toBe(shape1)
 
     canvasEl.dispatchEvent(eventUp)
 
     boxApp.run()
 
-    expect(boxApp.selectedForDragAndDropShape).toBeNull()
+    expect(boxApp.draggableShape).toBeNull()
   })
 
   // @todo define this test for canvas Engine
@@ -163,7 +163,7 @@ describe('Shape Interactions', function () {
 
     boxApp.run()
 
-    expect(boxApp.selectedForDragAndDropShape).toBeNull()
+    expect(boxApp.draggableShape).toBeNull()
 
     canvasEl.dispatchEvent(eventUp)
 

@@ -5,11 +5,13 @@ export default class CanvasEngine {
     this.canvasEl = canvasEl
     this.ctx = canvasEl.getContext('2d')
     this.shapes = []
+
     this.updateCallback = options.updateCallback || null
 
-    this.selectedForDragAndDropShape = null
-    this.selectedForDragAndDropShapePoint = null
-    this.redraw = true
+    this.draggableShape = null
+    this.draggableShapeClickPoint = null
+
+    this.redrawScene = true
 
     this.setUpEvents()
   }
@@ -22,18 +24,18 @@ export default class CanvasEngine {
       const selectedShape = this.getSelectedShape(point)
 
       if (selectedShape !== null) {
-        this.selectedForDragAndDropShapePoint = new Point(
+        this.draggableShapeClickPoint = new Point(
           point.x - selectedShape.x,
           point.y - selectedShape.y
         )
 
-        this.selectedForDragAndDropShape = selectedShape
+        this.draggableShape = selectedShape
 
         this.canvasEl.dispatchEvent(
           new CustomEvent('canvas:shape-move-start', { detail: {
             'point': this.getMousePos(e),
-            'shape': this.selectedForDragAndDropShape,
-            'selectedPoint': this.selectedForDragAndDropShapePoint
+            'shape': this.draggableShape,
+            'selectedPoint': this.draggableShapeClickPoint
           } })
         )
       }
@@ -43,54 +45,34 @@ export default class CanvasEngine {
       this.canvasEl.dispatchEvent(
         new CustomEvent('canvas:shape-move-stop', { detail: {
           'point': this.getMousePos(e),
-          'shape': this.selectedForDragAndDropShape,
-          'selectedPoint': this.selectedForDragAndDropShapePoint
+          'shape': this.draggableShape,
+          'selectedPoint': this.draggableShapeClickPoint
         } })
       )
 
-      this.selectedForDragAndDropShape = null
-      this.selectedForDragAndDropShapePoint = null
+      this.draggableShape = null
+      this.draggableShapeClickPoint = null
     })
 
     this.canvasEl.addEventListener('mousemove', e => {
-      if (!this.selectedForDragAndDropShape) {
+      if (!this.draggableShape) {
         return
       }
 
       this.canvasEl.dispatchEvent(
         new CustomEvent('canvas:shape-move', { detail: {
           'point': this.getMousePos(e),
-          'shape': this.selectedForDragAndDropShape,
-          'selectedPoint': this.selectedForDragAndDropShapePoint
+          'shape': this.draggableShape,
+          'selectedPoint': this.draggableShapeClickPoint
         } })
       )
     })
 
-    // this.canvasEl.addEventListener('click', (e) => {
-    //   const point = this.getMousePos(e)
-    //   const selectedShape = this.getSelectedShape(point)
-    //
-    //   if (selectedShape !== null) {
-    //     this.canvasEl.dispatchEvent(
-    //       new CustomEvent('canvas:shape-select', { detail: {
-    //         'shape': selectedShape,
-    //         'point': this.getMousePos(e)
-    //       } })
-    //     )
-    //   }
-    //
-    //   this.canvasEl.dispatchEvent(
-    //     new CustomEvent('canvas:click', { detail: {
-    //       'point': this.getMousePos(e)
-    //     } })
-    //   )
-    // })
-
     return this
   }
 
-  forceRedraw () {
-    this.redraw = true
+  forceRedrawScene () {
+    this.redrawScene = true
   }
 
   /**
@@ -110,7 +92,7 @@ export default class CanvasEngine {
    */
   add (shape) {
     this.shapes.push(shape)
-    this.forceRedraw()
+    this.forceRedrawScene()
 
     return this
   }
@@ -160,17 +142,17 @@ export default class CanvasEngine {
   run () {
     window.requestAnimationFrame(this.run.bind(this), this.canvasEl)
 
-    if (this.redraw !== false) {
+    if (this.redrawScene !== false) {
       // console.log('run')
       this.update()
       this.draw()
     }
 
-    this.redraw = false
+    this.redrawScene = false
   }
 
   draw () {
-    // console.log('redraw frame')
+    // console.log('redrawScene frame')
 
     this.clear()
 
