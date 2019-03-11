@@ -6,12 +6,12 @@ export default class CanvasEngine {
     this.ctx = canvasEl.getContext('2d')
     this.shapes = []
 
-    this.updateCallback = options.updateCallback || null
-
     this.draggableShape = null
     this.draggableShapeClickPoint = null
 
     this.redrawScene = true
+
+    this.updateCallback = options.updateCallback || null
 
     this.setUpEvents()
   }
@@ -20,72 +20,108 @@ export default class CanvasEngine {
     window.requestAnimationFrame(this.run.bind(this), this.canvasEl)
 
     this.canvasEl.addEventListener('mousedown', e => {
-      const point = this.getMousePos(e)
-      const selectedShape = this.getSelectedShape(point)
-
-      if (selectedShape !== null) {
-        this.draggableShapeClickPoint = new Point(
-          point.x - selectedShape.x,
-          point.y - selectedShape.y
-        )
-
-        this.draggableShape = selectedShape
-
-        this.canvasEl.dispatchEvent(
-          new CustomEvent('canvas:shape-move-start', { detail: {
-            'point': this.getMousePos(e),
-            'shape': this.draggableShape,
-            'selectedPoint': this.draggableShapeClickPoint
-          } })
-        )
-      }
+      this.handleShapeMoveStart(CanvasEngine.createPointFromMouseEvent(e))
     })
 
     this.canvasEl.addEventListener('mouseup', e => {
-      this.canvasEl.dispatchEvent(
-        new CustomEvent('canvas:shape-move-stop', { detail: {
-          'point': this.getMousePos(e),
-          'shape': this.draggableShape,
-          'selectedPoint': this.draggableShapeClickPoint
-        } })
-      )
-
-      this.draggableShape = null
-      this.draggableShapeClickPoint = null
+      this.handleShapeMoveStop(CanvasEngine.createPointFromMouseEvent(e))
     })
 
     this.canvasEl.addEventListener('mousemove', e => {
-      if (!this.draggableShape) {
-        return
-      }
-
-      this.canvasEl.dispatchEvent(
-        new CustomEvent('canvas:shape-move', { detail: {
-          'point': this.getMousePos(e),
-          'shape': this.draggableShape,
-          'selectedPoint': this.draggableShapeClickPoint
-        } })
-      )
+      this.handleShapeMove(CanvasEngine.createPointFromMouseEvent(e))
     })
 
     return this
   }
 
+  /**
+   * @param {Point} eventPoint
+   */
+  handleShapeMoveStart (eventPoint) {
+    const mousePoint = this.getMousePositionByPoint(eventPoint)
+    const selectedShape = this.getSelectedShape(mousePoint)
+
+    if (selectedShape !== null) {
+      this.draggableShapeClickPoint = new Point(
+        mousePoint.x - selectedShape.x,
+        mousePoint.y - selectedShape.y
+      )
+
+      this.draggableShape = selectedShape
+
+      this.canvasEl.dispatchEvent(
+        new CustomEvent('canvas:shape-move-start', { detail: {
+          'point': mousePoint,
+          'shape': this.draggableShape,
+          'selectedPoint': this.draggableShapeClickPoint
+        } })
+      )
+    }
+  }
+
+  /**
+   * @param {Point} eventPoint
+   */
+  handleShapeMoveStop (eventPoint) {
+    this.canvasEl.dispatchEvent(
+      new CustomEvent('canvas:shape-move-stop', { detail: {
+        'point': this.getMousePositionByPoint(eventPoint),
+        'shape': this.draggableShape,
+        'selectedPoint': this.draggableShapeClickPoint
+      } })
+    )
+
+    this.draggableShape = null
+    this.draggableShapeClickPoint = null
+  }
+
+  /**
+   * @param {Point} eventPoint
+   */
+  handleShapeMove (eventPoint) {
+    if (!this.draggableShape) {
+      return
+    }
+
+    this.canvasEl.dispatchEvent(
+      new CustomEvent('canvas:shape-move', { detail: {
+        'point': this.getMousePositionByPoint(eventPoint),
+        'shape': this.draggableShape,
+        'selectedPoint': this.draggableShapeClickPoint
+      } })
+    )
+  }
+
+  /**
+   * Make next Animation Frame calling run method
+   */
   forceRedrawScene () {
     this.redrawScene = true
   }
 
   /**
-   * @param e
-   * @return {Point}
+   * @param mouseEvent
+   *
+   * @returns {Point}
    */
-  getMousePos (e) {
-    const rect = this.canvasEl.getBoundingClientRect()
-
-    return new Point(e.clientX - rect.left, e.clientY - rect.top)
+  static createPointFromMouseEvent (mouseEvent) {
+    return new Point(mouseEvent.clientX, mouseEvent.clientY)
   }
 
   /**
+   * @param {Point} eventPoint
+   *
+   * @return {Point}
+   */
+  getMousePositionByPoint (eventPoint) {
+    const rect = this.canvasEl.getBoundingClientRect()
+
+    return new Point(eventPoint.x - rect.left, eventPoint.y - rect.top)
+  }
+
+  /**
+   * Add the given Shape to the Canvas
+   *
    * @param {Shape} shape
    *
    * @return {this}
@@ -107,6 +143,8 @@ export default class CanvasEngine {
   /**
    * @todo test me
    *
+   * Run update Scene callback
+   *
    * @returns {this}
    */
   update () {
@@ -118,7 +156,10 @@ export default class CanvasEngine {
   }
 
   /**
+   * Returns the Shape being clicked on
+   *
    * @param {Point} point
+   *
    * @return {(Shape|null)}
    */
   getSelectedShape (point) {
@@ -135,10 +176,16 @@ export default class CanvasEngine {
     return null
   }
 
+  /**
+   * Clear full Scene on the Canvas
+   */
   clear () {
     this.ctx.clearRect(0, 0, this.canvasEl.width, this.canvasEl.height)
   }
 
+  /**
+   * Run Scene Update and Draw
+   */
   run () {
     window.requestAnimationFrame(this.run.bind(this), this.canvasEl)
 
@@ -151,6 +198,9 @@ export default class CanvasEngine {
     this.redrawScene = false
   }
 
+  /**
+   * Draw Scene
+   */
   draw () {
     // console.log('redrawScene frame')
 
