@@ -5,7 +5,6 @@ import CanvasEngine from './canvasEngine'
 export default class BoxApp {
   constructor (canvasEl, options = {}) {
     this.canvasEl = canvasEl
-    this.ctx = canvasEl.getContext('2d')
     this.snapToOffset = options.snapToOffset || 0
     this.initialDragAndDropShapePoint = null
     this.fullViewportMode = false
@@ -14,7 +13,8 @@ export default class BoxApp {
 
     this.canvasEngine = new CanvasEngine(canvasEl, options)
 
-    this.setUpEvents()
+    this.setUpEngineEvents()
+    this.setUpAppEvents()
   }
 
   static get collideColor () {
@@ -61,10 +61,25 @@ export default class BoxApp {
     this.canvasEl.width = dimensions.width
     this.canvasEl.height = dimensions.height
 
-    this.forceRedraw()
+    this.forceRedrawScene()
   }
 
-  setUpEvents () {
+  setUpEngineEvents () {
+    window.requestAnimationFrame(this.run.bind(this), this.canvasEngine.getCanvasElement())
+    this.canvasEl.addEventListener('mousedown', e => {
+      this.canvasEngine.handleShapeMoveStart(CanvasEngine.createPointFromMouseEvent(e))
+    })
+
+    this.canvasEl.addEventListener('mouseup', e => {
+      this.canvasEngine.handleShapeMoveStop(CanvasEngine.createPointFromMouseEvent(e))
+    })
+
+    this.canvasEl.addEventListener('mousemove', e => {
+      this.canvasEngine.handleShapeMove(CanvasEngine.createPointFromMouseEvent(e))
+    })
+  }
+
+  setUpAppEvents () {
     window.onresize = this.setUpFullViewportMode.bind(this)
 
     this.canvasEl.addEventListener('canvas:shape-move-start', e => {
@@ -87,7 +102,7 @@ export default class BoxApp {
 
           selectedForDragAndDropShape.x = initialPoint.x
           selectedForDragAndDropShape.y = initialPoint.y
-          this.forceRedraw()
+          this.forceRedrawScene()
         }
       }
 
@@ -108,7 +123,7 @@ export default class BoxApp {
       selectedForDragAndDropShape.x = point.x - selectedForDragAndDropShapePoint.x
       selectedForDragAndDropShape.y = point.y - selectedForDragAndDropShapePoint.y
 
-      this.forceRedraw()
+      this.forceRedrawScene()
 
       for (let i = 0; i < size; i++) {
         let shape = this.shapes[i]
@@ -133,7 +148,7 @@ export default class BoxApp {
     return this
   }
 
-  forceRedraw () {
+  forceRedrawScene () {
     this.canvasEngine.forceRedrawScene()
   }
 
@@ -213,6 +228,7 @@ export default class BoxApp {
   }
 
   run () {
+    window.requestAnimationFrame(this.run.bind(this), this.canvasEngine.getCanvasElement())
     this.canvasEngine.run()
   }
 }
