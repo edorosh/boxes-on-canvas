@@ -1,7 +1,7 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8fc79eef5c7f4d05a76af6d75ec6e5ef)](https://app.codacy.com/app/edorosh/boxes-on-canvas?utm_source=github.com&utm_medium=referral&utm_content=edorosh/boxes-on-canvas&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/edorosh/boxes-on-canvas.svg?branch=master)](https://travis-ci.org/edorosh/boxes-on-canvas)
 [![Coverage Status](https://coveralls.io/repos/github/edorosh/boxes-on-canvas/badge.svg?branch=master)](https://coveralls.io/github/edorosh/boxes-on-canvas?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/edorosh/boxes-on-canvas)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8fc79eef5c7f4d05a76af6d75ec6e5ef)](https://app.codacy.com/app/edorosh/boxes-on-canvas?utm_source=github.com&utm_medium=referral&utm_content=edorosh/boxes-on-canvas&utm_campaign=Badge_Grade_Dashboard)
 
 # Boxes on Canvas (2D)
 The App draws boxes (rectangles) on a web page and allows an User to drag & drop them. The app was developed 
