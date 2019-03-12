@@ -12,6 +12,24 @@ export default class CanvasEngine {
     this.redrawScene = true
 
     this.updateCallback = options.updateCallback || null
+
+    this.setUpEngineEvents()
+  }
+
+  setUpEngineEvents () {
+    window.requestAnimationFrame(this.run.bind(this), this.getCanvasElement())
+
+    this.canvasEl.addEventListener('mousedown', e => {
+      this.handleShapeMoveStart(CanvasEngine.createPointFromMouseEvent(e))
+    })
+
+    this.canvasEl.addEventListener('mouseup', e => {
+      this.handleShapeMoveStop(CanvasEngine.createPointFromMouseEvent(e))
+    })
+
+    this.canvasEl.addEventListener('mousemove', e => {
+      this.handleShapeMove(CanvasEngine.createPointFromMouseEvent(e))
+    })
   }
 
   getCanvasElement () {
@@ -57,6 +75,14 @@ export default class CanvasEngine {
 
     this.draggableShape = null
     this.draggableShapeClickPoint = null
+  }
+
+  getDraggableShape () {
+    return this.draggableShape
+  }
+
+  getDraggableShapeClickPoint () {
+    return this.draggableShapeClickPoint
   }
 
   /**
@@ -125,8 +151,6 @@ export default class CanvasEngine {
   }
 
   /**
-   * @todo test me
-   *
    * Run update Scene callback
    *
    * @returns {this}
@@ -171,6 +195,8 @@ export default class CanvasEngine {
    * Run Scene Update and Draw
    */
   run () {
+    window.requestAnimationFrame(this.run.bind(this), this.getCanvasElement())
+
     if (this.redrawScene !== false) {
       // console.log('run')
       this.update()

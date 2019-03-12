@@ -53,7 +53,7 @@
     "build": "webpack --mode production",
     "watch": "webpack --mode development --watch",
     "start": "webpack-dev-server --mode development --open",
-    "karma": "karma start",
+    "karma": "karma start --auto-watch",
     "karma-ci": "cross-env NODE_ENV=test nyc karma start"
   },
   "author": "Eugene Dorosh",
