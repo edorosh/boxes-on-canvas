@@ -1,31 +1,36 @@
 language: node_js
 
-os:
-  - linux
-
 node_js:
   - 10
 
+dist: trusty # needs Ubuntu Trusty
+# Note: if you switch to sudo: false, you'll need to launch Chrome with --no-sandbox.
+# See https://github.com/travis-ci/travis-ci/issues/8836
+sudo: required
+addons:
+  chrome: stable # have Travis install Chrome stable.
+
 stages:
   - Lint
-  - Build
   - Unit Tests
+  - Visual Tests
 
 git:
   depth:
     1
 
 cache:
+  npm: true
   directories:
     - node_modules
 
 jobs:
   include:
     - stage: Lint
-      script: 'npm run lint && npm run lint-tests'
-    - stage: Build
-      script: 'npm run build'
+      script: 'npm run lint && npm run lint-tests && npm run lint-visual-tests'
     - stage: Unit Tests
       script: 'npm run test-ci'
       after_script:
         - "cat ./dist/reports/coverage/lcov.info | ./node_modules/.bin/coveralls"
+    - stage: Visual Tests
+      script: 'npm run build && npm run karma-ci'
