@@ -66,5 +66,5 @@ Once a feature is done make sure the code passes ES Lint. Run `npm run cs-fix-sr
 * split webpack prod/test config
 * rethink Babel usage
 * refactor console.log calls
-* generate documentation
 * add demos on github pages
+* add generated docuementation

@@ -96,8 +96,7 @@ describe('Shape Interactions', function () {
     expect(shape1.bordersWith(shape2)).toBeFalsy()
   })
 
-  // @todo define this test for canvas Engine
-  xit('should select the Shape on mouse down', () => {
+  it('should select the Shape on mouse down', () => {
     const shape1 = new Shape(10, 10, 80, 80)
     const shape2 = new Shape(10, shape1.getOffsetY() + snapToOffset + 1, 80, 80)
 
@@ -126,17 +125,16 @@ describe('Shape Interactions', function () {
 
     boxApp.run()
 
-    expect(boxApp.draggableShape).toBe(shape1)
+    expect(boxApp.selectedForDragAndDropShape).toBe(shape1)
 
     canvasEl.dispatchEvent(eventUp)
 
     boxApp.run()
 
-    expect(boxApp.draggableShape).toBeNull()
+    expect(boxApp.selectedForDragAndDropShape).toBeNull()
   })
 
-  // @todo define this test for canvas Engine
-  xit('should not select any Shape on mouse down', () => {
+  it('should not select any Shape on mouse down', () => {
     const shape1 = new Shape(10, 10, 80, 80)
 
     boxApp
@@ -163,7 +161,7 @@ describe('Shape Interactions', function () {
 
     boxApp.run()
 
-    expect(boxApp.draggableShape).toBeNull()
+    expect(boxApp.selectedForDragAndDropShape).toBeNull()
 
     canvasEl.dispatchEvent(eventUp)
 
