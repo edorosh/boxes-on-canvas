@@ -1,31 +1,26 @@
 import Point from './point'
 import Shape from './shape'
+import CanvasEngine from './canvasEngine'
 
 export default class BoxApp {
   constructor (canvasEl, options = {}) {
     this.canvasEl = canvasEl
-    this.ctx = canvasEl.getContext('2d')
-    this.shapes = []
     this.snapToOffset = options.snapToOffset || 0
-    this.redraw = true
-    this.selectedForDragAndDropShape = null
-    this.selectedForDragAndDropShapePoint = null
-    this.initialDragAndDropPoint = null
+    this.initialDragAndDropShapePoint = null
     this.fullViewportMode = false
 
-    this.setUpEvents()
+    options.updateCallback = this.update.bind(this)
+
+    this.canvasEngine = new CanvasEngine(canvasEl, options)
+
+    this.setUpAppEvents()
   }
 
   static get collideColor () {
     return 'rgba(255,0,0,.6)'
   }
 
-  static get selectedColor () {
-    return '#008000'
-  }
-
   /**
-   * @todo test this more
    * @param {Shape} shape
    *
    * @return {boolean}
@@ -34,12 +29,8 @@ export default class BoxApp {
     return shape.fill === BoxApp.collideColor
   }
 
-  get canvasHeight () {
-    return this.canvasEl.height
-  }
-
-  get canvasWidth () {
-    return this.canvasEl.width
+  get shapes () {
+    return this.canvasEngine.getShapes()
   }
 
   /**
@@ -68,141 +59,104 @@ export default class BoxApp {
     this.canvasEl.width = dimensions.width
     this.canvasEl.height = dimensions.height
 
-    this.forceRedraw()
+    this.forceRedrawScene()
   }
 
-  setUpEvents () {
-    window.requestAnimationFrame(this.run.bind(this), this.canvasEl)
+  setUpAppEvents () {
     window.onresize = this.setUpFullViewportMode.bind(this)
 
-    this.canvasEl.addEventListener('mousedown', e => {
-      const point = this.getMousePos(e)
-      const selectedShape = this.getSelectedShape(point)
-
-      if (selectedShape !== null) {
-        this.initialDragAndDropPoint = {
-          x: selectedShape.x,
-          y: selectedShape.y
-        }
-
-        // @todo add abstraction
-        this.selectedForDragAndDropShapePoint = new Point(
-          point.x - selectedShape.x,
-          point.y - selectedShape.y
-        )
-
-        // @todo replace by behaviour(method)
-        this.selectedForDragAndDropShape = selectedShape
-      }
-
-      // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
-    })
-
-    this.canvasEl.addEventListener('mouseup', e => {
-      if (this.selectedForDragAndDropShape !== null && this.initialDragAndDropPoint !== null) {
-        if (BoxApp.isInCollisionState(this.selectedForDragAndDropShape)) {
-          const self = this
-          const shape = this.selectedForDragAndDropShape
-          const initialPoint = this.initialDragAndDropPoint
-
-          shape.x = initialPoint.x
-          shape.y = initialPoint.y
-          self.forceRedraw()
-        }
-      }
-
-      // @todo replace by behaviour(method)
-      this.selectedForDragAndDropShape = null
-      this.initialDragAndDropPoint = null
-
-      // @todo add AOP
-      // console.log('mousedown ', this.selectedForDragAndDropShape)
-    })
-
-    this.canvasEl.addEventListener('mousemove', e => {
-      if (!this.selectedForDragAndDropShape) {
-        return
-      }
-
-      const size = this.shapes.length
-      const point = this.getMousePos(e)
-
-      if (this.selectedForDragAndDropShape !== null) {
-        this.selectedForDragAndDropShape.x = point.x - this.selectedForDragAndDropShapePoint.x
-        this.selectedForDragAndDropShape.y = point.y - this.selectedForDragAndDropShapePoint.y
-
-        this.forceRedraw()
-      }
-
-      // console.log('mouseup ', point, ' ', this.selectedForDragAndDropShape)
-
-      for (let i = 0; i < size; i++) {
-        let shape = this.shapes[i]
-
-        const initialPoint = new Point(
-          this.selectedForDragAndDropShape.x,
-          this.selectedForDragAndDropShape.y
-        )
-
-        if (this.selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
-          this.selectedForDragAndDropShape.snapTo(shape)
-
-          // get back if has collisions
-          if (this.findCollisionsWith(this.selectedForDragAndDropShape)) {
-            this.selectedForDragAndDropShape.x = initialPoint.x
-            this.selectedForDragAndDropShape.y = initialPoint.y
-          } else {
-            this.forceRedraw()
-            // @todo end up the loop if first found
-          }
-        }
-      }
-    })
-
-    this.canvasEl.addEventListener('click', (e) => {
-      const point = this.getMousePos(e)
-
-      const selectedShape = this.getSelectedShape(point)
-
-      // @todo fire event
-      if (selectedShape !== null) {
-        selectedShape.fill = BoxApp.selectedColor
-      }
-
-      this.forceRedraw()
-    })
+    this.canvasEl.addEventListener('canvas:shape-move-start', this.handleShapeMoveStart.bind(this))
+    this.canvasEl.addEventListener('canvas:shape-move-stop', this.handleShapeMoveStop.bind(this))
+    this.canvasEl.addEventListener('canvas:shape-move', this.handleShapeMove.bind(this))
 
     return this
   }
 
-  forceRedraw () {
-    this.redraw = true
+  handleShapeMoveStart (e) {
+    const selectedShape = e.detail.shape
+
+    if (selectedShape !== null) {
+      this.initialDragAndDropShapePoint = {
+        x: selectedShape.x,
+        y: selectedShape.y
+      }
+    }
+  }
+
+  handleShapeMoveStop (e) {
+    const selectedForDragAndDropShape = e.detail.shape
+
+    if (selectedForDragAndDropShape !== null && this.initialDragAndDropShapePoint !== null) {
+      if (BoxApp.isInCollisionState(selectedForDragAndDropShape)) {
+        const initialPoint = this.initialDragAndDropShapePoint
+
+        selectedForDragAndDropShape.x = initialPoint.x
+        selectedForDragAndDropShape.y = initialPoint.y
+        this.forceRedrawScene()
+      }
+    }
+
+    this.initialDragAndDropShapePoint = null
+  }
+
+  handleShapeMove (e) {
+    const selectedForDragAndDropShape = e.detail.shape
+    const selectedForDragAndDropShapePoint = e.detail.selectedPoint
+
+    if (!selectedForDragAndDropShape) {
+      return
+    }
+
+    const size = this.shapes.length
+    const point = e.detail.point
+
+    selectedForDragAndDropShape.x = point.x - selectedForDragAndDropShapePoint.x
+    selectedForDragAndDropShape.y = point.y - selectedForDragAndDropShapePoint.y
+
+    this.forceRedrawScene()
+
+    for (let i = 0; i < size; i++) {
+      let shape = this.shapes[i]
+
+      const initialPoint = new Point(
+        selectedForDragAndDropShape.x,
+        selectedForDragAndDropShape.y
+      )
+
+      if (selectedForDragAndDropShape.isStickableTo(shape, this.snapToOffset)) {
+        selectedForDragAndDropShape.snapTo(shape)
+
+        // get back if has collisions
+        if (this.findCollisionsWith(selectedForDragAndDropShape)) {
+          selectedForDragAndDropShape.x = initialPoint.x
+          selectedForDragAndDropShape.y = initialPoint.y
+        }
+      }
+    }
   }
 
   /**
-   * @param e
-   * @return {Point}
+   * Trigger Update and Redraw Scene on the next Animation tick
    */
-  getMousePos (e) {
-    const rect = this.canvasEl.getBoundingClientRect()
-
-    return new Point(e.clientX - rect.left, e.clientY - rect.top)
+  forceRedrawScene () {
+    this.canvasEngine.forceRedrawScene()
   }
 
   /**
+   * Add the given Shape on Canvas
+   *
    * @param {Shape} shape
    *
    * @return {this}
    */
   add (shape) {
-    this.shapes.push(shape)
-    this.forceRedraw()
+    this.canvasEngine.add(shape)
 
     return this
   }
 
   /**
-   * @todo test me
+   * Update Scene
    *
    * @returns {this}
    */
@@ -214,37 +168,26 @@ export default class BoxApp {
   }
 
   /**
+   * Clear fill color of all Shapes
+   *
    * @param {Shape} shape
    */
   static resetShapeState (shape) {
     shape.fill = Shape.defaultFillColor
   }
 
+  /**
+   * Clear state of all Shapes on Canvas
+   */
   clearShapeState () {
     this.shapes.forEach((shape) => BoxApp.resetShapeState(shape))
   }
 
   /**
-   * @param {Point} point
-   * @return {(Shape|null)}
-   */
-  getSelectedShape (point) {
-    const size = this.shapes.length
-
-    for (let i = 0; i < size; i++) {
-      let shape = this.shapes[i]
-
-      if (shape.hasPoint(point)) {
-        return shape
-      }
-    }
-
-    return null
-  }
-
-  /**
-   * @tod add unit test
+   * Figure out if the given Shape collides with any other Shape
+   *
    * @param {Shape} shape
+   *
    * @return {boolean}
    */
   findCollisionsWith (shape) {
@@ -266,6 +209,9 @@ export default class BoxApp {
     return false
   }
 
+  /**
+   * Handle Shapes in collision state
+   */
   handleCollisions () {
     const size = this.shapes.length
 
@@ -283,29 +229,10 @@ export default class BoxApp {
     }
   }
 
-  clear () {
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
-  }
-
+  /**
+   * Trigger to draw and update Scene
+   */
   run () {
-    window.requestAnimationFrame(this.run.bind(this))
-
-    if (this.redraw !== false) {
-      // console.log('run')
-      this.update()
-      this.draw()
-    }
-
-    this.redraw = false
-  }
-
-  draw () {
-    // console.log('redraw frame')
-
-    this.clear()
-
-    this.shapes.forEach((shape) => {
-      shape.draw(this.ctx)
-    })
+    this.canvasEngine.run()
   }
 }

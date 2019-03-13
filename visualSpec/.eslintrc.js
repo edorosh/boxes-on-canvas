@@ -1,6 +1,7 @@
 module.exports = {
   "globals": {
     "BoxApp": "readonly",
-    "Shape": "readonly"
+    "Shape": "readonly",
+    "CanvasEngine": "readonly"
   }
 };
